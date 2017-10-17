@@ -1,14 +1,41 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:tag="login"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:paddingBottom="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:paddingLeft="16dp"
     tools:context="com.saude.maxima.LoginFragment">
 
+    <EditText
+        android:id="@+id/edtEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="@string/email" />
 
-    <TextView
-        android:id="@+id/textView2"
+    <EditText
+        android:id="@+id/edtPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:hint="@string/password"/>
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:onClick="login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView" />
-</RelativeLayout>
+        android:text="@string/login" />
+
+    <TextView
+        android:id="@+id/txtCreate"
+        android:textColor="@color/black"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/do_not_have_an_account_create_a" />
+</LinearLayout>

@@ -1,83 +1,97 @@
 package com.saude.maxima;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 
-public class LoginFragment extends Fragment {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class AddUserFragment extends Fragment {
 
-    EditText edtEmail, edtPassword;
-    Button btnLogin;
-    TextView txtCreate;
+    EditText edtName, edtPassword, edtEmail, edtConfirmPassword;
+    Button btnCancel, btnRegister;
+    RadioGroup radioGroup;
+    RadioButton gender;
 
     String url = "";
     String params = "";
+
     private static String[] routes = {
-        "http://10.0.0.103:8000/oauth/token",
-        "http://10.0.0.103:8000/api/user"
+            "http://10.0.0.103:8000/oauth/token",
+            "http://10.0.0.103:8000/api/user"
     };
 
-    public LoginFragment() {
+    public AddUserFragment() {
         // Required empty public constructor
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_login, container, false);
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_add_user, container, false);
+
+
+        edtName = (EditText) view.findViewById(R.id.edtName);
         edtEmail = (EditText) view.findViewById(R.id.edtEmail);
         edtPassword = (EditText) view.findViewById(R.id.edtPassword);
-        btnLogin = (Button) view.findViewById(R.id.btnLogin);
-        txtCreate = (TextView) view.findViewById(R.id.txtCreate);
+        edtConfirmPassword = (EditText) view.findViewById(R.id.edtConfirmPassword);
+        radioGroup = (RadioGroup) view.findViewById(R.id.radGender);
+        btnRegister = (Button) view.findViewById(R.id.btnRegister);
+        gender = (RadioButton) view.findViewById(radioGroup.getCheckedRadioButtonId());
 
-        txtCreate.setOnClickListener(new View.OnClickListener() {
+        btnCancel = (Button) view.findViewById(R.id.btnCancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddUserFragment addUserFragment = new AddUserFragment();
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.content_fragment, addUserFragment, "add_user");
-                fragmentTransaction.addToBackStack("add_user");
+                fragmentTransaction.replace(R.id.content_fragment, new HomeFragment(), "home");
+                fragmentTransaction.addToBackStack("home");
                 fragmentTransaction.commit();
             }
         });
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(isOnline()){
+                    String name = edtName.getText().toString();
                     String email = edtEmail.getText().toString();
                     String password = edtPassword.getText().toString();
-                    if(email.isEmpty() || password.isEmpty()){
+                    String confirmPassword = edtConfirmPassword.getText().toString();
+                    int sex = gender.getText().equals(R.string.man) ? 0 : 1;
+                    if(name.isEmpty() || email.isEmpty() || password.isEmpty()){
                         Toast.makeText(getContext(), "Preencha os campos", Toast.LENGTH_SHORT).show();
                     }else {
-                        url = routes[0];
-                        params = "username="+email;
-                        params += "&password="+password+"&grant_type=password";
-                        params += "&client_id=2";
-                        params += "&client_secret=LGbti3QiyHEv3RURLckseKR1laX6v2zDCqpkr6LG";
-                        params += "&scope=";
-                        new getAccessTokenUser().execute(url);
+                        url = "http://10.0.0.103:8000/api/users";
+                        params = "name="+name;
+                        params += "&email="+email;
+                        params += "&password="+password;
+                        params += "&confirm_password="+confirmPassword;
+                        params += "&gender="+sex;
+                        new create().execute(url);
                     }
                 }else{
                     Toast.makeText(getContext(), "Não há conexão com a internet", Toast.LENGTH_SHORT).show();
@@ -85,12 +99,7 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        // Inflate the layout for this fragment
         return view;
-    }
-
-    public void login(View view){
-        //Toast.makeText(getContext(), "Teste", Toast.LENGTH_LONG).show();
     }
 
     private boolean isOnline() {
@@ -103,7 +112,7 @@ public class LoginFragment extends Fragment {
     /**
      * Implementation of AsyncTask designed to fetch data from the network.
      */
-    private class getAccessTokenUser extends AsyncTask<String, Void, String> {
+    private class create extends AsyncTask<String, Void, String> {
 
         /**
          * Defines work to perform on the background thread.
@@ -121,29 +130,26 @@ public class LoginFragment extends Fragment {
             super.onPostExecute(result);
 
             try{
-                JSONObject jsonObject = new JSONObject(result);
-                if(jsonObject.has("success")){
-                    String tokenType = jsonObject.getJSONObject("success").getString("token_type");
-                    String accessToken = jsonObject.getJSONObject("success").getString("access_token");
-                    new getUser(tokenType, accessToken, params).execute(routes[1]);
+                JSONObject response = new JSONObject(result);
+                if(response.has("success")){
+                    String tokenType = response.getJSONObject("success").get("token").toString();
+                    new getUser("Bearer", tokenType, params).execute(routes[1]);
                 }else{
-                    Toast.makeText(getContext(), "Usuário ou Senha inválidos", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Ocorreu um erro ao cadastrar, tente novamente", Toast.LENGTH_LONG).show();
                 }
             }catch (JSONException e){
-                Log.d("error1", e.getMessage());
+                Log.d("response", e.getMessage());
             }
+            /*if(!result.equals("401") || !result.equals("false")){
+                HomeFragment homeFragment = new HomeFragment();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.content_fragment, homeFragment, "home");
+                fragmentTransaction.addToBackStack("home");
+                fragmentTransaction.commit();
 
-            /*if(!result.equals("401")){
-                try{
-                    JSONObject jsonObject = new JSONObject(result);
-                    String tokenType = jsonObject.get("token_type").toString();
-                    String accessToken = jsonObject.get("access_token").toString();
-                    new getUser(tokenType, accessToken, params).execute(routes[1]);
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
+                Toast.makeText(getContext(), "Cadastrado com Sucesso", Toast.LENGTH_LONG).show();
             }else{
-                Toast.makeText(getContext(), "Usuário ou Senha inválidos", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Ocorreu um erro ao cadastrar", Toast.LENGTH_LONG).show();
             }*/
         }
 
@@ -185,11 +191,13 @@ public class LoginFragment extends Fragment {
             super.onPostExecute(result);
             try{
                 JSONObject jsonObject = new JSONObject(result);
-                if(!jsonObject.has("error")){
-                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                if(!jsonObject.has("errors")){
                     HomeFragment homeFragment = new HomeFragment();
-                    fragmentTransaction.replace(R.id.content_fragment, homeFragment);
+                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.content_fragment, homeFragment, "home");
+                    fragmentTransaction.addToBackStack("home");
                     fragmentTransaction.commit();
+                    Toast.makeText(getContext(), "Cadastrado com Sucesso", Toast.LENGTH_LONG).show();
                 }
             }catch (JSONException e){
                 Log.d("error1", e.getMessage());
@@ -232,7 +240,5 @@ public class LoginFragment extends Fragment {
 
 
     }
-
-
 
 }

@@ -8,4 +8,14 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="home">Tela Inicial</string>
+    <string name="do_not_have_an_account_create_a">Não tem uma conta? Crie uma</string>
+    <string name="email">E-mail</string>
+    <string name="password">Senha</string>
+    <string name="login">Login</string>
+    <string name="name">Nome</string>
+    <string name="register">Cadastrar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="man">Homem</string>
+    <string name="woman">Mulher</string>
+    <string name="confirm_password">Confirme a senha</string>
 </resources>

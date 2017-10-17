@@ -6,10 +6,11 @@
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_home"
             android:title="@string/home" />
+
         <item
-            android:id="@+id/nav_report"
-            android:icon="@android:drawable/ic_menu_report_image"
-            android:title="Relatório" />
+            android:id="@+id/nav_login"
+            android:icon="@android:drawable/ic_dialog_email"
+            android:title="Login" />
         <!--<item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"

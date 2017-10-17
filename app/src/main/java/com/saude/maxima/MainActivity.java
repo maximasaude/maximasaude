@@ -58,8 +58,7 @@ public class MainActivity extends AppCompatActivity
         this.navigationView = (NavigationView) findViewById(R.id.nav_view);
         this.navigationView.setNavigationItemSelectedListener(this);
         this.navigationView.getMenu().getItem(0).setChecked(true);
-
-        this.addCallBack();
+        this.addCallBackChangeFragment();
     }
 
     @Override
@@ -72,18 +71,22 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void addCallBack(){
-        this.getSupportFragmentManager().addOnBackStackChangedListener(
+    /**
+     *
+     */
+    private void addCallBackChangeFragment(){
+        getSupportFragmentManager().addOnBackStackChangedListener(
             new FragmentManager.OnBackStackChangedListener() {
                 public void onBackStackChanged() {
                     Fragment current = fm.findFragmentById(R.id.content_fragment);
                     if (current instanceof HomeFragment) {
                         navigationView.setCheckedItem(R.id.nav_home);
-                    } else {
-                        navigationView.setCheckedItem(R.id.nav_report);
+                    } else if(current instanceof LoginFragment){
+                        navigationView.setCheckedItem(R.id.nav_login);
                     }
                 }
-            });
+            }
+        );
     }
 
     @Override
@@ -120,7 +123,7 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.addToBackStack("pilha");
             fragmentTransaction.replace(R.id.content_fragment, homeFragment, "home").commit();
 
-        }else if (id == R.id.nav_report) {
+        }else if (id == R.id.nav_login) {
             LoginFragment loginFragment = new LoginFragment();
             FragmentTransaction fragmentTransaction = fm.beginTransaction();
             fragmentTransaction.addToBackStack("pilha");
