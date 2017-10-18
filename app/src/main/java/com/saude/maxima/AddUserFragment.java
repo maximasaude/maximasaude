@@ -1,8 +1,10 @@
 package com.saude.maxima;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -18,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -33,6 +36,13 @@ public class AddUserFragment extends Fragment {
     Button btnCancel, btnRegister;
     RadioGroup radioGroup;
     RadioButton gender;
+
+
+    ProgressDialog progressDialog;
+
+
+    TextView emailUser;
+    TextView nameUser;
 
     String url = "";
     String params = "";
@@ -61,6 +71,7 @@ public class AddUserFragment extends Fragment {
         radioGroup = (RadioGroup) view.findViewById(R.id.radGender);
         btnRegister = (Button) view.findViewById(R.id.btnRegister);
         gender = (RadioButton) view.findViewById(radioGroup.getCheckedRadioButtonId());
+        progressDialog = new ProgressDialog(getContext());
 
         btnCancel = (Button) view.findViewById(R.id.btnCancel);
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -112,13 +123,13 @@ public class AddUserFragment extends Fragment {
     /**
      * Implementation of AsyncTask designed to fetch data from the network.
      */
-    private class create extends AsyncTask<String, Void, String> {
+    private class create extends AsyncTask<String, Void, JSONObject> {
 
         /**
          * Defines work to perform on the background thread.
          */
         @Override
-        protected String doInBackground(String... urls) {
+        protected JSONObject doInBackground(String... urls) {
             return Connection.post(urls[0], params);
         }
 
@@ -126,31 +137,26 @@ public class AddUserFragment extends Fragment {
          * Updates the DownloadCallback with the result.
          */
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(JSONObject result) {
             super.onPostExecute(result);
 
-            try{
-                JSONObject response = new JSONObject(result);
-                if(response.has("success")){
-                    String tokenType = response.getJSONObject("success").get("token").toString();
+            try {
+                if (result.has("success")) {
+                    String tokenType = result.getJSONObject("success").get("token").toString();
                     new getUser("Bearer", tokenType, params).execute(routes[1]);
-                }else{
+                } else {
                     Toast.makeText(getContext(), "Ocorreu um erro ao cadastrar, tente novamente", Toast.LENGTH_LONG).show();
                 }
             }catch (JSONException e){
-                Log.d("response", e.getMessage());
+                e.printStackTrace();
             }
-            /*if(!result.equals("401") || !result.equals("false")){
-                HomeFragment homeFragment = new HomeFragment();
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.content_fragment, homeFragment, "home");
-                fragmentTransaction.addToBackStack("home");
-                fragmentTransaction.commit();
+        }
 
-                Toast.makeText(getContext(), "Cadastrado com Sucesso", Toast.LENGTH_LONG).show();
-            }else{
-                Toast.makeText(getContext(), "Ocorreu um erro ao cadastrar", Toast.LENGTH_LONG).show();
-            }*/
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage(getString(R.string.executing));
+            progressDialog.show();
         }
 
 
@@ -158,14 +164,14 @@ public class AddUserFragment extends Fragment {
          * Override to add special behavior for cancelled AsyncTask.
          */
         @Override
-        protected void onCancelled(String result) {
+        protected void onCancelled(JSONObject result) {
         }
     }
 
     /**
      * Implementation of AsyncTask designed to fetch data from the network.
      */
-    private class getUser extends AsyncTask<String, Void, String> {
+    private class getUser extends AsyncTask<String, Void, JSONObject> {
 
         String type, accessToken, params;
 
@@ -179,7 +185,7 @@ public class AddUserFragment extends Fragment {
          * Defines work to perform on the background thread.
          */
         @Override
-        protected String doInBackground(String... urls) {
+        protected JSONObject doInBackground(String... urls) {
             return Connection.get(this.getType(), this.getAccessToken(), urls[0], null);
         }
 
@@ -187,11 +193,29 @@ public class AddUserFragment extends Fragment {
          * Updates the DownloadCallback with the result.
          */
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(JSONObject result) {
             super.onPostExecute(result);
-            try{
-                JSONObject jsonObject = new JSONObject(result);
-                if(!jsonObject.has("errors")){
+
+            try {
+                if (result.has("success")) {
+                    //Pegando os dados de retorno
+                    JSONObject data = result.getJSONObject("success");
+
+                    //Setando o email do usuário no cabeçalho do menu lateral
+                    emailUser = (TextView) getActivity().findViewById(R.id.email);
+                    emailUser.setText(data.getString("email"));
+
+                    //Setando o nome do usuário no cabeçalho do menu lateral
+                    nameUser = (TextView) getActivity().findViewById(R.id.name);
+                    nameUser.setText(data.getString("email"));
+
+                    progressDialog.dismiss();
+
+                    //Adicionando os dados do usuário
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);
+                    sharedPreferences.edit().putString("user", data.toString()).commit();
+
+                    //Iniciando a transição para a tela home
                     HomeFragment homeFragment = new HomeFragment();
                     FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.content_fragment, homeFragment, "home");
@@ -200,7 +224,8 @@ public class AddUserFragment extends Fragment {
                     Toast.makeText(getContext(), "Cadastrado com Sucesso", Toast.LENGTH_LONG).show();
                 }
             }catch (JSONException e){
-                Log.d("error1", e.getMessage());
+                e.printStackTrace();
+                progressDialog.dismiss();
             }
         }
 
@@ -209,10 +234,8 @@ public class AddUserFragment extends Fragment {
          * Override to add special behavior for cancelled AsyncTask.
          */
         @Override
-        protected void onCancelled(String result) {
+        protected void onCancelled(JSONObject result) {
         }
-
-
 
         public String getType() {
             return type;

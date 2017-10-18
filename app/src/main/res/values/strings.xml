@@ -18,4 +18,9 @@
     <string name="man">Homem</string>
     <string name="woman">Mulher</string>
     <string name="confirm_password">Confirme a senha</string>
+    <string name="field_required">Campo Requerido</string>
+    <string name="addToBackStack">Retorno de fragmentos</string>
+    <string name="loading">Carregando</string>
+    <string name="execute">Executar</string>
+    <string name="executing">Executando</string>
 </resources>

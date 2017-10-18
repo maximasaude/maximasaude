@@ -1,11 +1,14 @@
 package com.saude.maxima;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,12 +26,24 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private FragmentManager fm = getSupportFragmentManager();
-    private NavigationView navigationView = null;
+    NavigationView navigationView = null;
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.OnSharedPreferenceChangeListener spChange = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            Log.i("Script alterado", key+"updated");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(spChange);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -55,9 +70,14 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        this.navigationView = (NavigationView) findViewById(R.id.nav_view);
-        this.navigationView.setNavigationItemSelectedListener(this);
-        this.navigationView.getMenu().getItem(0).setChecked(true);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        if(sharedPreferences.contains("user")){
+            navigationView.getMenu().getItem(1).setVisible(false);
+        }
+        navigationView.getMenu().getItem(0).setChecked(true);
+
         this.addCallBackChangeFragment();
     }
 
@@ -78,11 +98,15 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().addOnBackStackChangedListener(
             new FragmentManager.OnBackStackChangedListener() {
                 public void onBackStackChanged() {
+                    if(sharedPreferences.contains("user")){
+                        navigationView.getMenu().getItem(1).setVisible(false);
+                    }
                     Fragment current = fm.findFragmentById(R.id.content_fragment);
                     if (current instanceof HomeFragment) {
                         navigationView.setCheckedItem(R.id.nav_home);
                     } else if(current instanceof LoginFragment){
-                        navigationView.setCheckedItem(R.id.nav_login);
+                       navigationView.setCheckedItem(R.id.nav_login);
+
                     }
                 }
             }
@@ -120,18 +144,32 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_home) {
             HomeFragment homeFragment = new HomeFragment();
             FragmentTransaction fragmentTransaction = fm.beginTransaction();
-            fragmentTransaction.addToBackStack("pilha");
+            fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
             fragmentTransaction.replace(R.id.content_fragment, homeFragment, "home").commit();
 
         }else if (id == R.id.nav_login) {
             LoginFragment loginFragment = new LoginFragment();
             FragmentTransaction fragmentTransaction = fm.beginTransaction();
-            fragmentTransaction.addToBackStack("pilha");
+            fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
             fragmentTransaction.replace(R.id.content_fragment, loginFragment, "login").commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(spChange);
+        sharedPreferences.edit().clear().commit();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(spChange);
+        sharedPreferences.edit().clear().commit();
     }
 }

@@ -31,7 +31,7 @@ public class Connection {
     private static JSONObject success;
 
 
-    public static String get(String tokenType, String token, String url_user, String params){
+    public static JSONObject get(String tokenType, String token, String url_user, String params){
         URL url;
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
@@ -87,7 +87,7 @@ public class Connection {
                     }
                 }
 
-                return result.toString();
+                return result;
             }else{
                 bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getErrorStream(), "UTF-8"));
                 StringBuffer response = new StringBuffer();
@@ -109,7 +109,7 @@ public class Connection {
                         e1.printStackTrace();
                     }
                 }
-                return result.toString();
+                return result;
             }
         } catch (IOException e) {
             Log.e("PlaceholderFragment", "Error ", e);
@@ -132,7 +132,7 @@ public class Connection {
     }
 
 
-    public static String post(String url_user, String params){
+    public static JSONObject post(String url_user, String params){
         URL url;
         HttpURLConnection connection = null;
 
@@ -185,7 +185,7 @@ public class Connection {
                     result.put("success", response.toString());
                 }
 
-                return result.toString();
+                return result;
             } else{
                 bufferedReader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "UTF-8"));
                 StringBuffer response = new StringBuffer();
@@ -203,7 +203,7 @@ public class Connection {
                 } catch (JSONException e){
                     result.put("errors", response.toString());
                 }
-                return result.toString();
+                return result;
             }
 
         }catch (Exception error){
