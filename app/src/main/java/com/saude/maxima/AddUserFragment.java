@@ -23,6 +23,9 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.saude.maxima.utils.ManagerSharedPreferences;
+import com.saude.maxima.utils.Routes;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,6 +50,8 @@ public class AddUserFragment extends Fragment {
     String url = "";
     String params = "";
 
+    ManagerSharedPreferences managerSharedPreferences;
+
     private static String[] routes = {
             "http://10.0.0.103:8000/oauth/token",
             "http://10.0.0.103:8000/api/user"
@@ -62,6 +67,8 @@ public class AddUserFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_user, container, false);
+
+        managerSharedPreferences = new ManagerSharedPreferences(getContext());
 
 
         edtName = (EditText) view.findViewById(R.id.edtName);
@@ -96,13 +103,14 @@ public class AddUserFragment extends Fragment {
                     if(name.isEmpty() || email.isEmpty() || password.isEmpty()){
                         Toast.makeText(getContext(), "Preencha os campos", Toast.LENGTH_SHORT).show();
                     }else {
-                        url = "http://10.0.0.103:8000/api/users";
+                        url = "http://10.0.0.104:8000/api/users";
                         params = "name="+name;
                         params += "&email="+email;
                         params += "&password="+password;
                         params += "&confirm_password="+confirmPassword;
                         params += "&gender="+sex;
-                        new create().execute(url);
+                        Log.i("route", Routes.createUser);
+                        new create().execute(Routes.createUser);
                     }
                 }else{
                     Toast.makeText(getContext(), "Não há conexão com a internet", Toast.LENGTH_SHORT).show();
@@ -143,7 +151,8 @@ public class AddUserFragment extends Fragment {
             try {
                 if (result.has("success")) {
                     String tokenType = result.getJSONObject("success").get("token").toString();
-                    new getUser("Bearer", tokenType, params).execute(routes[1]);
+                    Log.i("route", Routes.takeUser);
+                    new getUser("Bearer", tokenType, params).execute(Routes.takeUser);
                 } else {
                     Toast.makeText(getContext(), "Ocorreu um erro ao cadastrar, tente novamente", Toast.LENGTH_LONG).show();
                 }
@@ -212,14 +221,16 @@ public class AddUserFragment extends Fragment {
                     progressDialog.dismiss();
 
                     //Adicionando os dados do usuário
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);
-                    sharedPreferences.edit().putString("user", data.toString()).commit();
+                    //SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);
+                    //sharedPreferences.edit().putString("user", data.toString()).commit();
+
+                    managerSharedPreferences.set("user", data.toString());
 
                     //Iniciando a transição para a tela home
                     HomeFragment homeFragment = new HomeFragment();
                     FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.content_fragment, homeFragment, "home");
-                    fragmentTransaction.addToBackStack("home");
+                    fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
                     fragmentTransaction.commit();
                     Toast.makeText(getContext(), "Cadastrado com Sucesso", Toast.LENGTH_LONG).show();
                 }

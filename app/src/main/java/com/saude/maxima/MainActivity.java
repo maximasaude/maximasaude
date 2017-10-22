@@ -18,15 +18,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.saude.maxima.utils.Auth;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private FragmentManager fm = getSupportFragmentManager();
     NavigationView navigationView = null;
+
+    TextView name;
+    TextView email;
+
+    private Auth auth;
+    private JSONObject user;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.OnSharedPreferenceChangeListener spChange = new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -73,12 +84,35 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        if(sharedPreferences.contains("user")){
+        name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.name);
+        email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.email);
+
+        //Instancia para a classe auth
+        this.auth = new Auth(getApplicationContext());
+
+        //Pegando os dados do usuário, caso esteja logado
+        this.user = this.auth.getAuth();
+
+        /*if(sharedPreferences.contains("user")){
             navigationView.getMenu().getItem(1).setVisible(false);
-        }
+        }*/
+
+        //Setando true para o menu Home
         navigationView.getMenu().getItem(0).setChecked(true);
 
         this.addCallBackChangeFragment();
+
+        //Verifico se o usuário está logado
+        if(this.auth.isLogged()){
+            //Setando false para o menu login não ficar visível
+            navigationView.getMenu().getItem(1).setVisible(false);
+            try {
+                name.setText(this.user.get("name").toString());
+                email.setText(this.user.get("email").toString());
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -159,7 +193,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
+   /* @Override
     protected void onDestroy() {
         super.onDestroy();
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(spChange);
@@ -171,5 +205,5 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(spChange);
         sharedPreferences.edit().clear().commit();
-    }
+    }*/
 }

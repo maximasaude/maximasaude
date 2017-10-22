@@ -21,6 +21,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.saude.maxima.utils.Auth;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,14 +38,17 @@ public class LoginFragment extends Fragment {
     TextView emailUser;
     TextView nameUser;
 
+    private Auth auth;
+    private JSONObject user;
+
 
     ProgressDialog progressDialog;
 
     String url = "";
     String params = "";
     private static String[] routes = {
-        "http://10.0.0.103:8000/oauth/token",
-        "http://10.0.0.103:8000/api/user"
+        "http://10.0.0.107:8000/oauth/token",
+        "http://10.0.0.107:8000/api/user"
     };
 
     public LoginFragment() {
@@ -53,8 +58,14 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        //Caso o usuário esteja logado, redireciono para a tela inicial
-        if(this.getActivity().getSharedPreferences("user", Context.MODE_PRIVATE).contains("user")){
+        //Instancia para a classe auth
+        this.auth = new Auth(getActivity().getApplicationContext());
+
+        //Pegando os dados do usuário, caso esteja logado
+        this.user = this.auth.getAuth();
+
+        //Verifico se o usuário está logado
+        if(this.auth.isLogged()){
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.content_fragment, new HomeFragment(), "home").commit();
         }
@@ -92,7 +103,7 @@ public class LoginFragment extends Fragment {
                         params = "username="+email;
                         params += "&password="+password+"&grant_type=password";
                         params += "&client_id=2";
-                        params += "&client_secret=LGbti3QiyHEv3RURLckseKR1laX6v2zDCqpkr6LG";
+                        params += "&client_secret=Zds4wMPaW1o9DSHcXw5qpRSMCgTROzSGBUuvdcJD";
                         params += "&scope=";
                         new getAccessTokenUser().execute(url);
                     }

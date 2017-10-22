@@ -6,10 +6,20 @@ package com.saude.maxima.utils;
 
 public class Config {
 
-    private static final String host = "10.0.0.103:8000";
+    private static final String protocol = "http://";
+    private static final String host = "10.0.0.104";
+    private static final String port = ":8000";
 
-    protected static String getHost(){
+    public static String getHost(){
         return host;
+    }
+
+    public static String getPort(){
+        return port;
+    }
+
+    public static String getProtocol(){
+        return protocol;
     }
 
 }
