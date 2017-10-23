@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.saude.maxima.utils.Auth;
+import com.saude.maxima.utils.Routes;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,10 +47,7 @@ public class LoginFragment extends Fragment {
 
     String url = "";
     String params = "";
-    private static String[] routes = {
-        "http://10.0.0.107:8000/oauth/token",
-        "http://10.0.0.107:8000/api/user"
-    };
+
 
     public LoginFragment() {
         // Required empty public constructor
@@ -99,13 +97,12 @@ public class LoginFragment extends Fragment {
                         edtPassword.setText(R.string.field_required);
                         Toast.makeText(getContext(), "Preencha os campos", Toast.LENGTH_SHORT).show();
                     }else {
-                        url = routes[0];
                         params = "username="+email;
                         params += "&password="+password+"&grant_type=password";
                         params += "&client_id=2";
-                        params += "&client_secret=Zds4wMPaW1o9DSHcXw5qpRSMCgTROzSGBUuvdcJD";
+                        params += "&client_secret=xCtQL2HP24g9u8OrdFPZnSD2pTHDL2dZsfU2iPoo";
                         params += "&scope=";
-                        new getAccessTokenUser().execute(url);
+                        new getAccessTokenUser().execute(Routes.takeToken);
                     }
                 }else{
                     Toast.makeText(getContext(), "Não há conexão com a internet", Toast.LENGTH_SHORT).show();
@@ -163,9 +160,10 @@ public class LoginFragment extends Fragment {
                     String accessToken = result.getJSONObject("success").getString("access_token");
 
                     //Fazendo requisição para fazer login e buscar os dados do usuário
-                    new getUser(tokenType, accessToken, params).execute(routes[1]);
+                    new getUser(tokenType, accessToken, params).execute(Routes.takeUser);
                 }else{
                     Toast.makeText(getContext(), "Usuário ou Senha inválidos", Toast.LENGTH_LONG).show();
+                    progressDialog.dismiss();
                 }
             }catch (JSONException e){
                 progressDialog.dismiss();
@@ -212,7 +210,7 @@ public class LoginFragment extends Fragment {
 
                     //Setando o email do usuário no cabeçalho do menu lateral
                     emailUser = (TextView) getActivity().findViewById(R.id.email);
-                    emailUser.setText(data.getString("email"));
+                    emailUser.setText(data.getString("name"));
 
                     //Setando o nome do usuário no cabeçalho do menu lateral
                     nameUser = (TextView) getActivity().findViewById(R.id.name);

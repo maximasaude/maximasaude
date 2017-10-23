@@ -1,23 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center">
 
     <ImageView
-        android:id="@+id/grid_item_image"
-        android:layout_width="50px"
-        android:layout_height="50px"
-        android:layout_marginRight="10px"
-        android:src="" >
-    </ImageView>
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/img_package"/>
 
-    <TextView
-        android:id="@+id/grid_item_label"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@+id/label"
-        android:layout_marginTop="5px"
-        android:textSize="15px" >
-    </TextView>
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/value_package"/>
+        <TextView
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/name_package"/>
+        <TextView
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/description_package"/>
+    </LinearLayout>
+
+
 
 </LinearLayout>

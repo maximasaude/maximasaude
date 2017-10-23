@@ -1,46 +1,55 @@
 package com.saude.maxima.Adapters.Package;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import java.sql.Time;
+import com.saude.maxima.R;
+
 import java.util.ArrayList;
 
 /**
  * Created by Junnyor on 21/10/2017.
  */
 
-public class PackagesAdapter extends BaseAdapter {
+public class PackagesAdapter extends ArrayAdapter<Package> {
 
     private Context context;
-    private ArrayList<Time> list;
+    private ArrayList<Package> list;
 
-    public PackagesAdapter(Context context, ArrayList<Time> list){
+    TextView value, name, description;
+    ImageView img;
+
+    public PackagesAdapter(Context context, ArrayList<Package> list){
+        super(context, 0, list);
         this.context = context;
         this.list = list;
     }
 
-    @Override
-    public int getCount() {
-        return this.list.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return this.list.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Package el = this.list.get(position);
 
-        return null;
+        if(convertView == null)
+            convertView = LayoutInflater.from(this.context).inflate(R.layout.grid_view_home, null);
+
+        img = (ImageView) convertView.findViewById(R.id.img_package);
+        img.setImageResource(R.drawable.android_1);
+
+        name = (TextView) convertView.findViewById(R.id.name_package);
+        name.setText(el.getName());
+        name.setTextSize(20);
+
+        value = (TextView) convertView.findViewById(R.id.value_package);
+        value.setText("R$ "+Double.toString(el.getValue()));
+        value.setTextSize(20);
+
+
+        return convertView;
     }
 }

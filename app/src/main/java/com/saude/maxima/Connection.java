@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,6 +32,14 @@ public class Connection {
     private static JSONObject success;
 
 
+    /**
+     *
+     * @param tokenType
+     * @param token
+     * @param url_user
+     * @param params
+     * @return
+     */
     public static JSONObject get(String tokenType, String token, String url_user, String params){
         URL url;
         HttpURLConnection urlConnection = null;
@@ -131,6 +140,116 @@ public class Connection {
 
     }
 
+
+    /**
+     *
+     * @param url_user
+     * @param params
+     * @return
+     */
+    public static JSONObject get(String url_user, String params){
+        URL url;
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+        String forecastJsonStr = null;
+
+        try {
+            // Construct the URL for the OpenWeatherMap query
+            // Possible parameters are avaiable at OWM's forecast API page, at
+            // http://openweathermap.org/API#forecast
+            url = new URL(url_user);
+
+            // Create the request to OpenWeatherMap, and open the connection
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setRequestProperty("Accept", "application/json");
+
+            if(params != null) {
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8");
+                outputStreamWriter.write(params);
+                outputStreamWriter.flush();
+            }
+
+            urlConnection.connect();
+
+            int code = urlConnection.getResponseCode();
+
+            BufferedReader bufferedReader;
+
+            if(code >= 200 && code <= 299 ) {
+                InputStream inputStream = urlConnection.getInputStream();
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+                StringBuffer response = new StringBuffer();
+                String line;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    response.append(line+ "\n");
+                }
+                bufferedReader.close();
+
+                //Adicionando o índice success ao retorno
+                result = new JSONObject();
+
+                try{
+                    //Resposta de sucesso
+                    success = new JSONObject(response.toString());
+                    result.put("success", success);
+                } catch (JSONException e){
+                    try{
+                        result.put("success", new JSONArray(response.toString()));
+                    }catch (JSONException ex){
+                        ex.printStackTrace();
+                    }
+                    /*try {
+                        result.put("success", response.toString());
+                    } catch (JSONException e1) {
+                        e1.printStackTrace();
+                    }*/
+                }
+
+                return result;
+            }else{
+                bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getErrorStream(), "UTF-8"));
+                StringBuffer response = new StringBuffer();
+                String line;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    response.append(line+ "\n");
+                }
+                bufferedReader.close();
+
+                result = new JSONObject();
+                try{
+                    errors = new JSONObject(response.toString());
+                    result.put("errors", errors);
+                }catch (JSONException e){
+                    try {
+                        result.put("errors", response.toString());
+                    } catch (JSONException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                return result;
+            }
+        } catch (IOException e) {
+            Log.e("PlaceholderFragment", "Error ", e);
+            // If the code didn't successfully get the weather data, there's no point in attemping
+            // to parse it.
+            return null;
+        } finally{
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (final IOException e) {
+                    Log.e("PlaceholderFragment", "Error closing stream", e);
+                }
+            }
+        }
+
+    }
 
     public static JSONObject post(String url_user, String params){
         URL url;

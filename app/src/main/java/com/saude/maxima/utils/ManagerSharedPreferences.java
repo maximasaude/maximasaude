@@ -18,6 +18,18 @@ public class ManagerSharedPreferences {
         this.context = context;
     }
 
+    public boolean remove(String name){
+        SharedPreferences contentSharedPreferences = this.context.getSharedPreferences(name, Context.MODE_PRIVATE);
+        if(contentSharedPreferences != null){
+            if(contentSharedPreferences.contains(name)){
+                if(contentSharedPreferences.edit().remove(name).commit()){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public JSONObject get(String name){
         try{
             SharedPreferences contentSharedPreferences = this.context.getSharedPreferences(name, Context.MODE_PRIVATE);

@@ -13,5 +13,10 @@ public class Routes extends Config{
     public static final String takeUser = getProtocol()+getHost()+getPort()+"/api/user";
     public static final String createUser = getProtocol()+ getHost()+getPort()+"/api/users";
 
+    public static final String[] packages = {
+            getProtocol()+getHost()+getPort()+"/api/packages",
+            getProtocol()+getHost()+getPort()+"/api/packages/{id}"
+    };
+
 
 }

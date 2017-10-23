@@ -21,10 +21,12 @@ public class Auth{
         SharedPreferences sharedPreferences = context.getSharedPreferences("user", Context.MODE_PRIVATE);
         if(sharedPreferences != null){
             String user = sharedPreferences.getString("user", null);
-            try {
-                auth.put("auth", new JSONObject(user));
-            }catch (JSONException e){
-                e.printStackTrace();
+            if(user != null) {
+                try {
+                    auth.put("auth", new JSONObject(user));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -52,7 +54,7 @@ public class Auth{
 
     public JSONObject getAuth(){
         try {
-            if (auth.getJSONObject("auth") != null) {
+            if (auth.getJSONObject("auth") != null && auth.has("auth")) {
                 return auth.getJSONObject("auth");
             }
         }catch (JSONException e){
@@ -63,7 +65,7 @@ public class Auth{
 
     public static boolean isLogged(){
         try {
-            if(auth.getJSONObject("auth") != null){
+            if(auth.getJSONObject("auth") != null && auth.has("auth")){
                 return true;
             }
         }catch (JSONException e){

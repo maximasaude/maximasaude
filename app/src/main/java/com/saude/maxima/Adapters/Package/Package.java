@@ -21,6 +21,13 @@ public class Package {
     private String created_at;
     private String updated;
 
+    public Package(int id, String name, String description, double value){
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.value = value;
+    }
+
     public int getId() {
         return id;
     }
