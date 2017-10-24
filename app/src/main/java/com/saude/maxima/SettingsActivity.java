@@ -19,10 +19,23 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
     }
 
+    /**
+     *
+     * @param view
+     */
     public void logout(View view){
         managerSharedPreferences.remove("user");
         Intent main = new Intent(this, MainActivity.class);
         startActivity(main);
         finish();
+    }
+
+    /**
+     *
+     * @param view
+     */
+    public void terms(View view){
+        Intent main = new Intent(this, PackageShowActivity.class);
+        startActivity(main);
     }
 }

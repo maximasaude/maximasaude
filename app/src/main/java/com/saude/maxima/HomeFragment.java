@@ -3,6 +3,7 @@ package com.saude.maxima;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -67,6 +68,7 @@ public class HomeFragment extends Fragment {
         progressDialog = new ProgressDialog(getContext());
 
         progressDialog.setMessage(getString(R.string.executing));
+        progressDialog.setCancelable(false);
         progressDialog.show();
 
 
@@ -218,6 +220,10 @@ public class HomeFragment extends Fragment {
                     Bundle args = new Bundle();
                     args.putString("package", objPackage.toString());
 
+                    /*Intent intent = new Intent(getContext(), PackageShowActivity.class);
+                    intent.putExtras(args);
+                    startActivity(intent);*/
+
                     PackageShowFragment packageShowFragment =  new PackageShowFragment();
                     packageShowFragment.setArguments(args);
 
@@ -233,9 +239,6 @@ public class HomeFragment extends Fragment {
                 progressDialog.dismiss();
             }
             progressDialog.dismiss();
-            packagesAdapter = new PackagesAdapter(getContext(), packagesList);
-            gridView.setAdapter(packagesAdapter);
-            content.setVisibility(View.VISIBLE);
         }
 
 

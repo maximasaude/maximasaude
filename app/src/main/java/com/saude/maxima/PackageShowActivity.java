@@ -19,7 +19,7 @@ import com.saude.maxima.fragments.packages.PackageDescriptionFragment;
 
 import org.json.JSONObject;
 
-public class PackageShowFragment extends Fragment {
+public class PackageShowActivity extends Fragment {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
