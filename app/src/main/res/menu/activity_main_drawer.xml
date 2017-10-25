@@ -8,8 +8,12 @@
             android:title="@string/home" />
         <item
             android:id="@+id/nav_login"
-            android:icon="@android:drawable/ic_dialog_email"
+            android:icon="@drawable/ic_menu_account"
             android:title="Login" />
+        <item
+            android:id="@+id/cart"
+            android:icon="@drawable/ic_menu_cart"
+            android:title="@string/cart" />
         <!--<item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"

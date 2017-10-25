@@ -23,7 +23,6 @@ public class PackageShowFragment extends Fragment {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private JSONObject data_package;
 
     TextView name, description;
 
@@ -111,26 +110,31 @@ public class PackageShowFragment extends Fragment {
     private class PackageFragmentStatePagerAdapter extends FragmentStatePagerAdapter{
 
         private String[] tabTitles;
-        private String data_package;
+        private String dataPackage;
 
-        private PackageFragmentStatePagerAdapter(FragmentManager fm, String[] tabTitles, String data_package) {
+        private PackageFragmentStatePagerAdapter(FragmentManager fm, String[] tabTitles, String dataPackage) {
             super(fm);
             this.tabTitles = tabTitles;
-            this.data_package = data_package;
+            this.dataPackage = dataPackage;
         }
 
         @Override
         public Fragment getItem(int position) {
+            Bundle args = new Bundle();
             switch (position){
                 case 0:
                     PackageContentFragment packageContentFragment = new PackageContentFragment();
-                    Bundle args = new Bundle();
-
-                    args.putString("package", data_package);
+                    args.putString("package", this.dataPackage);
 
                     packageContentFragment.setArguments(args);
                     return packageContentFragment;
-                case 1: return new PackageDescriptionFragment();
+                case 1:
+                    PackageDescriptionFragment packageDescriptionFragment = new PackageDescriptionFragment();
+
+                    args.putString("package", this.dataPackage);
+
+                    packageDescriptionFragment.setArguments(args);
+                    return packageDescriptionFragment;
                 default: return null;
             }
         }

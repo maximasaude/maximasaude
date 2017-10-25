@@ -10,16 +10,24 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.saude.maxima.Adapters.Package.Package;
 import com.saude.maxima.Adapters.Package.PackagesAdapter;
@@ -38,6 +46,9 @@ import java.util.Iterator;
  */
 public class HomeFragment extends Fragment {
 
+    private float startX;
+    private float lastX;
+
     TextView data;
     ExpandableHeightGridView gridView;
     Context context;
@@ -49,11 +60,17 @@ public class HomeFragment extends Fragment {
 
     ArrayList<Package> packagesList;
 
+    Button prev, next;
+
+    ViewFlipper viewFlipper;
+
     ProgressDialog progressDialog;
+
 
     public HomeFragment() {
         // Required empty public constructor
     }
+
 
 
     @Override
@@ -61,6 +78,64 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         context = view.getContext();
+
+        viewFlipper = (ViewFlipper) view.findViewById(R.id.view_fliper);
+        prev = (Button) view.findViewById(R.id.prev);
+        next = (Button) view.findViewById(R.id.next);
+
+        prev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewFlipper.showPrevious();
+            }
+        });
+
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewFlipper.showNext();
+            }
+        });
+
+        viewFlipper.setFlipInterval(3000);
+        Animation in = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+        Animation out = AnimationUtils.loadAnimation(context, android.R.anim.slide_out_right);
+        viewFlipper.setInAnimation(in);
+        viewFlipper.setOutAnimation(out);
+
+
+        //viewFlipper.setOnTouchListener(onSwipeTouchListener);
+        viewFlipper.addOnLayoutChangeListener(onLayoutChangeListenerViewFlipper);
+
+        //Método executado ao tocar no viewflipper
+        //Faz as trocas de imagens
+        viewFlipper.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                int action = event.getActionMasked();
+
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        startX = event.getX();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        float endX = event.getX();
+                        float endY = event.getY();
+
+                        //swipe right
+                        if (startX < endX) {
+                            viewFlipper.showNext();
+                        }
+                        //swipe left
+                        if (startX > endX) {
+                            viewFlipper.showPrevious();
+                        }
+
+                        break;
+                }
+                return true;
+            }
+        });
 
         content = (LinearLayout) view.findViewById(R.id.content);
         content.setVisibility(View.INVISIBLE);
@@ -72,16 +147,18 @@ public class HomeFragment extends Fragment {
         progressDialog.show();
 
 
+        //Setando tamanho expandido para a gridview
         gridView = (ExpandableHeightGridView) view.findViewById(R.id.gridView);
         gridView.setExpanded(true);
 
-
+        //Executando busca de todos os pacotes disponíveis na API
         new getPackages(null).execute(Routes.packages[0]);
 
         //data = (TextView) view.findViewById(R.id.data);
 
 
 
+        //Implementa o listener do gridview
         this.onClickGridView();
 
         //gridView.setAdapter(packages);
@@ -92,6 +169,19 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         return view;
     }
+
+
+    /**
+     * Método executado ao trocar de layout no viewflipper
+     */
+    View.OnLayoutChangeListener onLayoutChangeListenerViewFlipper = new View.OnLayoutChangeListener() {
+        @Override
+        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+            /*ImageView img = (ImageView) v.findViewById(R.id.slide2);
+            img.setImageResource(R.drawable.slide1);*/
+        }
+    };
+
 
     private void onClickGridView(){
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -178,16 +268,19 @@ public class HomeFragment extends Fragment {
         protected void onCancelled(JSONObject result) {
         }
 
-        public String getParams() {
+        private String getParams() {
             return params;
         }
 
-        public void setParams(String params) {
+        private void setParams(String params) {
             this.params = params;
         }
     }
 
-    public class findPackage extends AsyncTask<String, Void, JSONObject> {
+    /**
+     * Classe responsável por executar busca de um determinado pacote, com o id como parâmetro
+     */
+    private class findPackage extends AsyncTask<String, Void, JSONObject> {
 
         String params;
         private JSONArray packages;
@@ -249,15 +342,14 @@ public class HomeFragment extends Fragment {
         protected void onCancelled(JSONObject result) {
         }
 
-        public String getParams() {
+        private String getParams() {
             return params;
         }
 
-        public void setParams(String params) {
+        private void setParams(String params) {
             this.params = params;
         }
 
     }
 
-
-    }
+}

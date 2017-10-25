@@ -20,7 +20,7 @@ import org.json.JSONObject;
 public class PackageContentFragment extends Fragment {
 
     private JSONObject data_package;
-    private TextView name, description;
+    private TextView name;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -29,13 +29,11 @@ public class PackageContentFragment extends Fragment {
         Bundle args = getArguments();
 
         name = (TextView) view.findViewById(R.id.name);
-        description = (TextView) view.findViewById(R.id.description);
         if (args != null) {
             try{
                 data_package = new JSONObject(args.getString("package"));
                 name.setText(data_package.getString("name"));
 
-                description.setText(data_package.getString("description"));
             }catch (JSONException e){
                 e.printStackTrace();
             }

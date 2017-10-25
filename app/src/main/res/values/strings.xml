@@ -14,12 +14,13 @@
     <string name="add_newsletter">Inscreva-se na nossa Newsletter para receber novidades</string>
     
     <string-array name="titles_tab">
-        <item>TAB A</item>
-        <item>TAB B</item>
+        <item>Detalhe</item>
+        <item>Descrição</item>
     </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="cart">Carrinho</string>
     <string name="home">Tela Inicial</string>
     <string name="do_not_have_an_account_create_a">Não tem uma conta? Crie uma</string>
     <string name="email">E-mail</string>

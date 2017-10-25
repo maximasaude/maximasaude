@@ -13,14 +13,21 @@
         android:layout_height="wrap_content">
 
         <!-- TODO: Update blank fragment layout -->
-        <TextView
-            android:gravity="center_vertical|center_horizontal"
-            android:id="@+id/imageView2"
-            android:textColor="@color/black"
-            android:text="SLIDER AQUI"
+        <ViewFlipper
+            android:id="@+id/view_fliper"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@color/colorPrimaryDark" />
+            android:layout_height="100dp">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/slide1"
+                android:src="@drawable/slide1"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/slide2"
+                android:src="@drawable/logo"/>
+        </ViewFlipper>
 
         <LinearLayout
             android:layout_width="match_parent"
