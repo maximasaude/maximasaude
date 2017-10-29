@@ -56,6 +56,7 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+
         //Instancia para a classe auth
         this.auth = new Auth(getActivity().getApplicationContext());
 
@@ -100,7 +101,7 @@ public class LoginFragment extends Fragment {
                         params = "username="+email;
                         params += "&password="+password+"&grant_type=password";
                         params += "&client_id=2";
-                        params += "&client_secret=xCtQL2HP24g9u8OrdFPZnSD2pTHDL2dZsfU2iPoo";
+                        params += "&client_secret=lwt2GU8ToG40P9UusKizYz2umr9rZlggfybJ502s";
                         params += "&scope=";
                         new getAccessTokenUser().execute(Routes.takeToken);
                     }
@@ -135,6 +136,7 @@ public class LoginFragment extends Fragment {
             super.onPreExecute();
             progressDialog.setMessage(getString(R.string.executing));
             progressDialog.show();
+            progressDialog.setCancelable(false);
         }
 
         /**

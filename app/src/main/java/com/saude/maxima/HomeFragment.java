@@ -80,22 +80,6 @@ public class HomeFragment extends Fragment {
         context = view.getContext();
 
         viewFlipper = (ViewFlipper) view.findViewById(R.id.view_fliper);
-        prev = (Button) view.findViewById(R.id.prev);
-        next = (Button) view.findViewById(R.id.next);
-
-        prev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewFlipper.showPrevious();
-            }
-        });
-
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewFlipper.showNext();
-            }
-        });
 
         viewFlipper.setFlipInterval(3000);
         Animation in = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);

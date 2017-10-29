@@ -3,6 +3,8 @@ package com.saude.maxima;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -48,25 +50,52 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
+    /**
+     * Função que verifica se há conexão com a internet
+     * @return boolean
+     */
+    private boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
-
-        sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
-        sharedPreferences.registerOnSharedPreferenceChangeListener(spChange);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if(savedInstanceState == null){
-            HomeFragment homeFragment = new HomeFragment();
-            FragmentTransaction fragmentTransaction = fm.beginTransaction();
-            fragmentTransaction.add(R.id.content_fragment, homeFragment);
-            fragmentTransaction.commit();
-        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        if(!isOnline()){
+
+            Toast.makeText(this, "Não há conexão com a internet", Toast.LENGTH_SHORT).show();
+
+        }else {
+
+
+            drawer.setDrawerListener(toggle);
+            toggle.syncState();
+            navigationView.setNavigationItemSelectedListener(this);
+
+            sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
+            sharedPreferences.registerOnSharedPreferenceChangeListener(spChange);
+
+            if (savedInstanceState == null) {
+                HomeFragment homeFragment = new HomeFragment();
+                FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                fragmentTransaction.add(R.id.content_fragment, homeFragment);
+                fragmentTransaction.commit();
+            }
 
 
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -78,42 +107,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });*/
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+            name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.name);
+            email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.email);
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+            //Instancia para a classe auth
+            this.auth = new Auth(getApplicationContext());
 
-        name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.name);
-        email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.email);
-
-        //Instancia para a classe auth
-        this.auth = new Auth(getApplicationContext());
-
-        //Pegando os dados do usuário, caso esteja logado
-        this.user = this.auth.getAuth();
+            //Pegando os dados do usuário, caso esteja logado
+            this.user = this.auth.getAuth();
 
         /*if(sharedPreferences.contains("user")){
             navigationView.getMenu().getItem(1).setVisible(false);
         }*/
 
-        //Setando true para o menu Home
-        navigationView.getMenu().getItem(0).setChecked(true);
+            //Setando true para o menu Home
+            navigationView.getMenu().getItem(0).setChecked(true);
 
-        this.addCallBackChangeFragment();
+            this.addCallBackChangeFragment();
 
-        //Verifico se o usuário está logado
-        if(this.auth.isLogged()){
-            //Setando false para o menu login não ficar visível
-            navigationView.getMenu().getItem(1).setVisible(false);
-            try {
-                name.setText(this.user.get("name").toString());
-                email.setText(this.user.get("email").toString());
-            }catch (JSONException e){
-                e.printStackTrace();
+            //Verifico se o usuário está logado
+            if (this.auth.isLogged()) {
+                //Setando false para o menu login não ficar visível
+                navigationView.getMenu().getItem(1).setVisible(false);
+                try {
+                    name.setText(this.user.get("name").toString());
+                    email.setText(this.user.get("email").toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
