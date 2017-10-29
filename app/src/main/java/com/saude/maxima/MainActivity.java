@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.setNavigationItemSelectedListener(this);
 
             sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
-            sharedPreferences.registerOnSharedPreferenceChangeListener(spChange);
+            //sharedPreferences.registerOnSharedPreferenceChangeListener(spChange);
 
             if (savedInstanceState == null) {
                 HomeFragment homeFragment = new HomeFragment();
