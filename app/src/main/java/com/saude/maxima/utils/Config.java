@@ -7,7 +7,7 @@ package com.saude.maxima.utils;
 public class Config {
 
     private static final String protocol = "http://";
-    private static final String host = "10.0.0.106";
+    private static final String host = "10.0.0.104";
     private static final String port = ":8000";
 
     public static String getHost(){

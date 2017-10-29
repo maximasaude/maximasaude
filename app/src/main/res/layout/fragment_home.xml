@@ -1,61 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<android.support.v4.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.saude.maxima.HomeFragment">
-
-    <LinearLayout
-        android:id="@+id/content"
+    tools:context="com.saude.maxima.HomeFragment"
+    android:id="@+id/swipe_refresh_layout">
+    <ScrollView
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
-
-        <!-- TODO: Update blank fragment layout -->
-        <ViewFlipper
-            android:id="@+id/view_fliper"
-            android:layout_width="match_parent"
-            android:layout_height="100dp">
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/slide1"
-                android:src="@drawable/slide1"/>
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/slide2"
-                android:src="@drawable/logo"/>
-        </ViewFlipper>
+        android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/content"
             android:layout_width="match_parent"
+            android:orientation="vertical"
             android:layout_height="wrap_content">
 
-            <com.saude.maxima.ExpandableHeightGridView
-                android:id="@+id/gridView"
+            <!-- TODO: Update blank fragment layout -->
+            <ViewFlipper
+                android:id="@+id/view_fliper"
+                android:layout_width="match_parent"
+                android:layout_height="100dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/slide1"
+                    android:src="@drawable/slide1"/>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/slide2"
+                    android:src="@drawable/logo"/>
+            </ViewFlipper>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.saude.maxima.ExpandableHeightGridView
+                    android:id="@+id/gridView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:columnWidth="60dp"
+                    android:horizontalSpacing="10dp"
+                    android:numColumns="2"
+                    android:verticalSpacing="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:columnWidth="60dp"
-                android:horizontalSpacing="10dp"
-                android:numColumns="2"
-                android:verticalSpacing="10dp" />
-        </LinearLayout>
+                android:gravity="center"
+                android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/footer"
-                android:textSize="50dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/footer"
+                    android:textSize="50dp" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</android.support.v4.widget.SwipeRefreshLayout>

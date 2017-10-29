@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.GestureDetector;
@@ -54,6 +55,7 @@ public class HomeFragment extends Fragment {
     Context context;
     ArrayAdapter<Package> packagesAdapter;
 
+    SwipeRefreshLayout swipeRefreshLayout;
     String params, url;
 
     LinearLayout content;
@@ -79,9 +81,13 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         context = view.getContext();
 
+        //Swipe Refresh Layout
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+
         viewFlipper = (ViewFlipper) view.findViewById(R.id.view_fliper);
 
         viewFlipper.setFlipInterval(3000);
+        viewFlipper.startFlipping();
         Animation in = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
         Animation out = AnimationUtils.loadAnimation(context, android.R.anim.slide_out_right);
         viewFlipper.setInAnimation(in);
@@ -91,11 +97,13 @@ public class HomeFragment extends Fragment {
         //viewFlipper.setOnTouchListener(onSwipeTouchListener);
         viewFlipper.addOnLayoutChangeListener(onLayoutChangeListenerViewFlipper);
 
+
         //Método executado ao tocar no viewflipper
         //Faz as trocas de imagens
         viewFlipper.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
+                viewFlipper.stopFlipping();
                 int action = event.getActionMasked();
 
                 switch (action) {
@@ -109,10 +117,12 @@ public class HomeFragment extends Fragment {
                         //swipe right
                         if (startX < endX) {
                             viewFlipper.showNext();
+                            viewFlipper.startFlipping();
                         }
                         //swipe left
                         if (startX > endX) {
                             viewFlipper.showPrevious();
+                            viewFlipper.startFlipping();
                         }
 
                         break;
