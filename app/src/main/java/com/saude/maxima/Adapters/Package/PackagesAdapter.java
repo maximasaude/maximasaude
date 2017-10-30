@@ -1,6 +1,7 @@
 package com.saude.maxima.Adapters.Package;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,47 +10,70 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.saude.maxima.R;
+import com.saude.maxima.interfaces.RecyclerViewOnClickListenerHack;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Junnyor on 21/10/2017.
  */
 
-public class PackagesAdapter extends ArrayAdapter<Package> {
+public class PackagesAdapter extends RecyclerView.Adapter<PackagesAdapter.PackagesViewHolder> {
 
-    private Context context;
-    private ArrayList<Package> list;
+    private List<Package> packages;
+    private LayoutInflater layoutInflater;
+    private RecyclerViewOnClickListenerHack recyclerViewOnClickListenerHack;
 
-    TextView value, name, description;
-    ImageView img;
-
-    public PackagesAdapter(Context context, ArrayList<Package> list){
-        super(context, 0, list);
-        this.context = context;
-        this.list = list;
+    public PackagesAdapter(Context context, List<Package> packages){
+        this.packages = packages;
+        this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+    public void setRecyclerViewOnClickListenerHack(RecyclerViewOnClickListenerHack r){
+        recyclerViewOnClickListenerHack = r;
+    }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        Package el = this.list.get(position);
+    public PackagesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = this.layoutInflater.inflate(R.layout.grid_view_home, parent, false);
+        PackagesViewHolder packagesViewHolder = new PackagesViewHolder(view);
+        return packagesViewHolder;
+    }
 
-        if(convertView == null)
-            convertView = LayoutInflater.from(this.context).inflate(R.layout.grid_view_home, null);
+    @Override
+    public void onBindViewHolder(PackagesViewHolder holder, int position) {
+        holder.img.setImageResource(R.drawable.android_1);
+        holder.value.setText(Double.toString(packages.get(position).getValue()));
+        holder.name.setText(packages.get(position).getName());
+        holder.description.setText(packages.get(position).getDescription());
+    }
 
-        img = (ImageView) convertView.findViewById(R.id.img_package);
-        img.setImageResource(R.drawable.android_1);
+    @Override
+    public int getItemCount() {
+        return packages.size();
+    }
 
-        name = (TextView) convertView.findViewById(R.id.name_package);
-        name.setText(el.getName());
-        name.setTextSize(20);
+    public class PackagesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        public ImageView img;
+        public TextView value;
+        public TextView name;
+        public TextView description;
 
-        value = (TextView) convertView.findViewById(R.id.value_package);
-        value.setText("R$ "+Double.toString(el.getValue()));
-        value.setTextSize(20);
+        public PackagesViewHolder(View itemView) {
+            super(itemView);
+            img = (ImageView) itemView.findViewById(R.id.img_package);
+            value = (TextView) itemView.findViewById(R.id.value_package);
+            name = (TextView) itemView.findViewById(R.id.name_package);
+            description = (TextView) itemView.findViewById(R.id.description_package);
+            itemView.setOnClickListener(this);
+        }
 
-
-        return convertView;
+        @Override
+        public void onClick(View view) {
+            if(recyclerViewOnClickListenerHack != null){
+                recyclerViewOnClickListenerHack.OnClickListener(view, getPosition());
+            }
+        }
     }
 }

@@ -3,16 +3,13 @@ package com.saude.maxima;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
-import android.view.DragEvent;
-import android.view.GestureDetector;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,9 +19,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +26,7 @@ import android.widget.ViewFlipper;
 
 import com.saude.maxima.Adapters.Package.Package;
 import com.saude.maxima.Adapters.Package.PackagesAdapter;
+import com.saude.maxima.interfaces.RecyclerViewOnClickListenerHack;
 import com.saude.maxima.utils.Routes;
 
 import org.json.JSONArray;
@@ -39,13 +34,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements RecyclerViewOnClickListenerHack {
 
     private float startX;
     private float lastX;
@@ -53,20 +48,24 @@ public class HomeFragment extends Fragment {
     TextView data;
     ExpandableHeightGridView gridView;
     Context context;
-    ArrayAdapter<Package> packagesAdapter;
+    PackagesAdapter packagesAdapter;
+
+    RecyclerView recyclerView;
 
     SwipeRefreshLayout swipeRefreshLayout;
     String params, url;
 
     LinearLayout content;
 
-    ArrayList<Package> packagesList;
+    List<Package> packagesList;
 
     Button prev, next;
 
     ViewFlipper viewFlipper;
 
     ProgressDialog progressDialog;
+
+    LinearLayoutManager linearLayoutManager;
 
 
     public HomeFragment() {
@@ -142,8 +141,17 @@ public class HomeFragment extends Fragment {
 
 
         //Setando tamanho expandido para a gridview
-        gridView = (ExpandableHeightGridView) view.findViewById(R.id.gridView);
-        gridView.setExpanded(true);
+        //gridView = (ExpandableHeightGridView) view.findViewById(R.id.gridView);
+        //gridView.setExpanded(true);
+
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycleView);
+        recyclerView.setHasFixedSize(true);
+
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        this.onScrollRecycleView();
 
         //Executando busca de todos os pacotes disponíveis na API
         new getPackages(null).execute(Routes.packages[0]);
@@ -153,7 +161,7 @@ public class HomeFragment extends Fragment {
 
 
         //Implementa o listener do gridview
-        this.onClickGridView();
+        //this.onClickGridView();
 
         //gridView.setAdapter(packages);
         //SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);
@@ -175,6 +183,25 @@ public class HomeFragment extends Fragment {
             img.setImageResource(R.drawable.slide1);*/
         }
     };
+
+    private void onScrollRecycleView(){
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                packagesAdapter = (PackagesAdapter) recyclerView.getAdapter();
+                if(packagesList.size() == linearLayoutManager.findLastCompletelyVisibleItemPosition() + 1){
+
+                }
+            }
+        });
+    }
 
 
     private void onClickGridView(){
@@ -200,6 +227,11 @@ public class HomeFragment extends Fragment {
                 startActivity(intent);*/
             }
         });
+    }
+
+    @Override
+    public void OnClickListener(View view, int position) {
+        Toast.makeText(getActivity(), "Postion"+ position, Toast.LENGTH_SHORT).show();
     }
 
     public class getPackages extends AsyncTask<String, Void, JSONObject>{
@@ -249,8 +281,10 @@ public class HomeFragment extends Fragment {
                 progressDialog.dismiss();
             }
             progressDialog.dismiss();
-            packagesAdapter = new PackagesAdapter(getContext(), packagesList);
-            gridView.setAdapter(packagesAdapter);
+            packagesAdapter = new PackagesAdapter(getActivity(), packagesList);
+            packagesAdapter.setRecyclerViewOnClickListenerHack(HomeFragment.this);
+            recyclerView.setAdapter(packagesAdapter);
+            //gridView.setAdapter(packagesAdapter);
             content.setVisibility(View.VISIBLE);
         }
 

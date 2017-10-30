@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.saude.maxima.ExpandableHeightGridView
+                <!--<com.saude.maxima.ExpandableHeightGridView
                     android:id="@+id/gridView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -45,7 +45,13 @@
                     android:columnWidth="60dp"
                     android:horizontalSpacing="10dp"
                     android:numColumns="2"
-                    android:verticalSpacing="10dp" />
+                    android:verticalSpacing="10dp" />-->
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycleView"
+                    android:scrollbars="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
             </LinearLayout>
 
             <LinearLayout

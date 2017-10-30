@@ -101,7 +101,7 @@ public class LoginFragment extends Fragment {
                         params = "username="+email;
                         params += "&password="+password+"&grant_type=password";
                         params += "&client_id=2";
-                        params += "&client_secret=lwt2GU8ToG40P9UusKizYz2umr9rZlggfybJ502s";
+                        params += "&client_secret=xCtQL2HP24g9u8OrdFPZnSD2pTHDL2dZsfU2iPoo";
                         params += "&scope=";
                         new getAccessTokenUser().execute(Routes.takeToken);
                     }
@@ -222,12 +222,17 @@ public class LoginFragment extends Fragment {
                     SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);
                     sharedPreferences.edit().putString("user", data.toString()).commit();
 
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    getActivity().finish();
+                    startActivity(intent);
+
+
                     //Iniciando a transição para a tela home
-                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                    HomeFragment homeFragment = new HomeFragment();
-                    fragmentTransaction.replace(R.id.content_fragment, homeFragment);
-                    fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
-                    fragmentTransaction.commit();
+                    //FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                    //HomeFragment homeFragment = new HomeFragment();
+                    //fragmentTransaction.replace(R.id.content_fragment, homeFragment);
+                    //fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
+                    //fragmentTransaction.commit();
                 }
             }catch (JSONException e){
                 progressDialog.dismiss();

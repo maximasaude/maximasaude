@@ -28,17 +28,17 @@
             android:title="Tools" />-->
     </group>
 
-    <!--<item android:title="Communicate">
+    <item android:title="@string/options" android:id="@+id/optionUser">
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:icon="@drawable/ic_menu_account"
+                android:title="@string/perfil" />
             <item
                 android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:icon="@drawable/ic_menu_list"
+                android:title="@string/report" />
         </menu>
-    </item>-->
+    </item>
 
 </menu>

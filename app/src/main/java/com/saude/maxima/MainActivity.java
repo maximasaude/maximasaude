@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             //Setando true para o menu Home
             navigationView.getMenu().getItem(0).setChecked(true);
+            navigationView.getMenu().findItem(R.id.optionUser).setVisible(false);
 
             this.addCallBackChangeFragment();
 
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (this.auth.isLogged()) {
                 //Setando false para o menu login não ficar visível
                 navigationView.getMenu().getItem(1).setVisible(false);
+                navigationView.getMenu().findItem(R.id.optionUser).setVisible(true);
                 try {
                     name.setText(this.user.get("name").toString());
                     email.setText(this.user.get("email").toString());
