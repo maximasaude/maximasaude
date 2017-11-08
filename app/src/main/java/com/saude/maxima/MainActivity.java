@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Auth auth;
     private JSONObject user;
+    private Object object;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.OnSharedPreferenceChangeListener spChange = new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -49,6 +50,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Log.i("Script alterado", key+"updated");
         }
     };
+
+    public MainActivity(){
+
+    }
+
+    public MainActivity(Object obj){
+        this.object = obj;
+    }
 
     /**
      * Função que verifica se há conexão com a internet
@@ -166,7 +175,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         navigationView.setCheckedItem(R.id.nav_home);
                     } else if(current instanceof LoginFragment){
                        navigationView.setCheckedItem(R.id.nav_login);
-
+                    }else if(current instanceof DiaryFragment){
+                        navigationView.setCheckedItem(R.id.nav_cart);
                     }
                 }
             }
@@ -212,6 +222,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentTransaction fragmentTransaction = fm.beginTransaction();
             fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
             fragmentTransaction.replace(R.id.content_fragment, loginFragment, "login").commit();
+        }else if (id == R.id.nav_cart) {
+            DiaryFragment diaryFragment = new DiaryFragment();
+            FragmentTransaction fragmentTransaction = fm.beginTransaction();
+            fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
+            fragmentTransaction.replace(R.id.content_fragment, diaryFragment, "diary").commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

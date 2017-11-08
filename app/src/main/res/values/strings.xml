@@ -12,11 +12,19 @@
     <string name="about_us">Sobre nós</string>
     <string name="notifications">Notificações</string>
     <string name="add_newsletter">Inscreva-se na nossa Newsletter para receber novidades</string>
-    
+
     <string-array name="titles_tab">
         <item>Detalhe</item>
         <item>Descrição</item>
     </string-array>
+
+    <string name="package_name">Nome do Pacote</string>
+    <string name="package_sys">Pacote</string>
+    <string name="edit">Editar</string>
+    <string name="remove">Remover</string>
+    <string name="scheduled_date">Data agendada</string>
+    <string name="value">Valor</string>
+    <string name="no_has_packages">Não há nenhum pacote selecionado</string>
 
     <string name="perfil">Perfil</string>
     <string name="option">Opção</string>

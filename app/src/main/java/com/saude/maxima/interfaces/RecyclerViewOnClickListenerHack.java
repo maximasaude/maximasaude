@@ -8,4 +8,6 @@ import android.view.View;
 
 public interface RecyclerViewOnClickListenerHack {
     public void OnClickListener(View view, int position);
+    public void OnLongPressClickListener(View view, int position);
+
 }

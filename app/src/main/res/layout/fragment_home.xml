@@ -47,6 +47,7 @@
                     android:numColumns="2"
                     android:verticalSpacing="10dp" />-->
                 <android.support.v7.widget.RecyclerView
+                    android:layout_marginTop="5dp"
                     android:id="@+id/recycleView"
                     android:scrollbars="vertical"
                     android:layout_width="match_parent"

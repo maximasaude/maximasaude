@@ -18,5 +18,10 @@ public class Routes extends Config{
             getProtocol()+getHost()+getPort()+"/api/packages/{id}"
     };
 
+    public static final String[] diaries = {
+            getProtocol()+getHost()+getPort()+"/api/diaries",
+            getProtocol()+getHost()+getPort()+"/api/diaries/{id}"
+    };
+
 
 }

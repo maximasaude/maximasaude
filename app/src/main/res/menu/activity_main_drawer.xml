@@ -11,7 +11,7 @@
             android:icon="@drawable/ic_menu_account"
             android:title="Login" />
         <item
-            android:id="@+id/cart"
+            android:id="@+id/nav_cart"
             android:icon="@drawable/ic_menu_cart"
             android:title="@string/cart" />
         <!--<item

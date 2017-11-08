@@ -8,8 +8,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -66,6 +69,8 @@ public class HomeFragment extends Fragment implements RecyclerViewOnClickListene
     ProgressDialog progressDialog;
 
     LinearLayoutManager linearLayoutManager;
+    GridLayoutManager gridLayoutManager;
+    StaggeredGridLayoutManager staggeredGridLayoutManager;
 
 
     public HomeFragment() {
@@ -147,9 +152,13 @@ public class HomeFragment extends Fragment implements RecyclerViewOnClickListene
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleView);
         recyclerView.setHasFixedSize(true);
 
-        linearLayoutManager = new LinearLayoutManager(getActivity());
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        //linearLayoutManager = new LinearLayoutManager(getActivity());
+        //gridLayoutManager = new GridLayoutManager(getActivity(), 2, GridLayoutManager.VERTICAL, false);
+        //linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        staggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        recyclerView.setLayoutManager(staggeredGridLayoutManager);
 
         this.onScrollRecycleView();
 
@@ -194,11 +203,25 @@ public class HomeFragment extends Fragment implements RecyclerViewOnClickListene
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                //LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                //GridLayoutManager gridLayoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+                StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
+                int[] aux = staggeredGridLayoutManager.findLastCompletelyVisibleItemPositions(null);
+                int max = -1;
+
+                for(int i = 0; i < aux.length; i++){
+                    max = aux[i] > max ? aux[1] : max;
+                }
+
                 packagesAdapter = (PackagesAdapter) recyclerView.getAdapter();
-                if(packagesList.size() == linearLayoutManager.findLastCompletelyVisibleItemPosition() + 1){
+                /*if(packagesList.size() == gridLayoutManager.findLastCompletelyVisibleItemPosition() + 1){
+
+                }*/
+
+                if(packagesList.size() == max){
 
                 }
+
             }
         });
     }
@@ -231,7 +254,18 @@ public class HomeFragment extends Fragment implements RecyclerViewOnClickListene
 
     @Override
     public void OnClickListener(View view, int position) {
-        Toast.makeText(getActivity(), "Postion"+ position, Toast.LENGTH_SHORT).show();
+        progressDialog.show();
+
+        int package_id = packagesList.get(position).getId();
+
+        url = Routes.packages[1].replace("{id}", ""+package_id);
+
+        new findPackage(null).execute(url);
+    }
+
+    @Override
+    public void OnLongPressClickListener(View view, int position) {
+        Toast.makeText(getActivity(), "Postion: "+ position, Toast.LENGTH_SHORT).show();
     }
 
     public class getPackages extends AsyncTask<String, Void, JSONObject>{
@@ -282,8 +316,9 @@ public class HomeFragment extends Fragment implements RecyclerViewOnClickListene
             }
             progressDialog.dismiss();
             packagesAdapter = new PackagesAdapter(getActivity(), packagesList);
-            packagesAdapter.setRecyclerViewOnClickListenerHack(HomeFragment.this);
+            //packagesAdapter.setRecyclerViewOnClickListenerHack(HomeFragment.this);
             recyclerView.setAdapter(packagesAdapter);
+            recyclerView.addOnItemTouchListener(new RecyclerViewOnTouchListener(getActivity(), recyclerView, HomeFragment.this));
             //gridView.setAdapter(packagesAdapter);
             content.setVisibility(View.VISIBLE);
         }
@@ -304,6 +339,8 @@ public class HomeFragment extends Fragment implements RecyclerViewOnClickListene
             this.params = params;
         }
     }
+
+
 
     /**
      * Classe responsável por executar busca de um determinado pacote, com o id como parâmetro
@@ -378,6 +415,53 @@ public class HomeFragment extends Fragment implements RecyclerViewOnClickListene
             this.params = params;
         }
 
+    }
+
+    private class RecyclerViewOnTouchListener implements RecyclerView.OnItemTouchListener {
+
+        private Context context;
+        private GestureDetector gestureDetector;
+        private RecyclerViewOnClickListenerHack recyclerViewOnClickListenerHack;
+
+        public RecyclerViewOnTouchListener(Context context, final RecyclerView rv, RecyclerViewOnClickListenerHack rvoclh){
+            this.context = context;
+            this.recyclerViewOnClickListenerHack = rvoclh;
+            gestureDetector = new GestureDetector(this.context, new GestureDetector.SimpleOnGestureListener(){
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    View cv = rv.findChildViewUnder(e.getX(), e.getY());
+                    if(cv != null && recyclerViewOnClickListenerHack != null){
+                        recyclerViewOnClickListenerHack.OnClickListener(cv, rv.getChildLayoutPosition(cv));
+                    }
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    super.onLongPress(e);
+                    View cv = rv.findChildViewUnder(e.getX(), e.getY());
+                    if(cv != null && recyclerViewOnClickListenerHack != null){
+                        recyclerViewOnClickListenerHack.OnLongPressClickListener(cv, rv.getChildLayoutPosition(cv));
+                    }
+                }
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+            this.gestureDetector.onTouchEvent(e);
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+        }
     }
 
 }

@@ -27,6 +27,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:src="@drawable/ic_view_agenda" />
+
+
+    <!--<include layout="@layout/dialog_cart"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"/>-->
 
 </android.support.design.widget.CoordinatorLayout>

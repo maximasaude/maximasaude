@@ -2,6 +2,7 @@ package com.saude.maxima.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +31,14 @@ public class ManagerSharedPreferences {
         return false;
     }
 
+    public boolean has(String name){
+        SharedPreferences contentSharedPreferences = this.context.getSharedPreferences(name, Context.MODE_PRIVATE);
+        if(contentSharedPreferences.contains(name)){
+            return true;
+        }
+        return false;
+    }
+
     public JSONObject get(String name){
         try{
             SharedPreferences contentSharedPreferences = this.context.getSharedPreferences(name, Context.MODE_PRIVATE);
@@ -43,16 +52,16 @@ public class ManagerSharedPreferences {
 
     public void set(String index, String content){
         SharedPreferences sharedPreferences = this.context.getSharedPreferences(index, Context.MODE_PRIVATE);
-        sharedPreferences.edit().putString(index, content).commit();
+        sharedPreferences.edit().putString(index, content).apply();
     }
 
     public void set(String index, int content){
         SharedPreferences sharedPreferences = this.context.getSharedPreferences(index, Context.MODE_PRIVATE);
-        sharedPreferences.edit().putInt(index, content);
+        sharedPreferences.edit().putInt(index, content).apply();
     }
 
     public void set(String index, float content){
         SharedPreferences sharedPreferences = this.context.getSharedPreferences(index, Context.MODE_PRIVATE);
-        sharedPreferences.edit().putFloat(index, content);
+        sharedPreferences.edit().putFloat(index, content).apply();
     }
 }
