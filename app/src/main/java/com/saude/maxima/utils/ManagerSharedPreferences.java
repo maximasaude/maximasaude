@@ -2,6 +2,7 @@ package com.saude.maxima.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -45,7 +46,7 @@ public class ManagerSharedPreferences {
             JSONObject obj = new JSONObject(contentSharedPreferences.getString(name, null));
             return obj;
         }catch (JSONException e){
-
+            Log.i("token", e.getMessage());
         }
         return null;
     }

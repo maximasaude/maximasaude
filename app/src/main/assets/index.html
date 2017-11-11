@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js">
+    </script>
+</head>
+<body>
+
+<script type="text/javascript">
+    $(function(){
+        PagSeguroDirectPayment.setSessionId(Android.getPagseguroSessionId());
+        PagSeguroDirectPayment.createCardToken({
+            cardNumber: Android.getCardNumber(),
+            cvv: Android.getCvv(),
+            expirationMonth: Android.getMonth(),
+            expirationYear: Android.getYear(),
+            success: function(response){
+            },
+            error: function(response){
+            },
+            complete: function(response){
+                Android.teste()
+            }
+        });
+    });
+
+    </script>
+
+
+</body>
+</html>

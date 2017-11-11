@@ -41,8 +41,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Auth auth;
     private JSONObject user;
-    private Object object;
-
     SharedPreferences sharedPreferences;
     SharedPreferences.OnSharedPreferenceChangeListener spChange = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
@@ -51,13 +49,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
-    public MainActivity(){
-
-    }
-
-    public MainActivity(Object obj){
-        this.object = obj;
-    }
 
     /**
      * Função que verifica se há conexão com a internet

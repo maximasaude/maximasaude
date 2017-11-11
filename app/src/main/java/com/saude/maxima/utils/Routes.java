@@ -23,5 +23,8 @@ public class Routes extends Config{
             getProtocol()+getHost()+getPort()+"/api/diaries/{id}"
     };
 
+    public static final String[] pagSeguro = {
+            getProtocol()+getHost()+getPort()+"/pagseguro/get_session_id"
+    };
 
 }

@@ -20,13 +20,13 @@ public class Diary {
     private int month;
     private int day;
 
-    public Diary(int id, String available_date, String description, int is_active, String created_at, String updated_at, List<DiaryHour> hourList) {
+    public Diary(int id, String availableDate, String description, int isActive, String createdAt, String updatedAt, List<DiaryHour> hourList) {
         this.id = id;
-        this.availableDate = available_date;
+        this.availableDate = availableDate;
         this.description = description;
-        this.isActive = is_active;
-        this.createdAt = created_at;
-        this.updatedAt = updated_at;
+        this.isActive = isActive;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.hourList = hourList;
     }
 
@@ -42,8 +42,8 @@ public class Diary {
         return availableDate;
     }
 
-    public void setAvailableDate(String available_date) {
-        this.availableDate = available_date;
+    public void setAvailableDate(String availableDate) {
+        this.availableDate = availableDate;
     }
 
     public String getDescription() {
@@ -58,24 +58,24 @@ public class Diary {
         return isActive;
     }
 
-    public void setIsActive(int is_active) {
-        this.isActive = is_active;
+    public void setIsActive(int isActive) {
+        this.isActive = isActive;
     }
 
     public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String created_at) {
-        this.createdAt = created_at;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(String updated_at) {
-        this.updatedAt = updated_at;
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public List<DiaryHour> getHourList() {
