@@ -1,32 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script
-            src="https://code.jquery.com/jquery-3.2.1.min.js"
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
             crossorigin="anonymous"></script>
+
+
     <script type="text/javascript" src="https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js">
     </script>
 </head>
 <body>
 
+<a>Teste</a>
+
 <script type="text/javascript">
+
     $(function(){
-        PagSeguroDirectPayment.setSessionId(Android.getPagseguroSessionId());
+
+        setTimeout(function(){
+            $("a").text(PagSeguroDirectPayment.ready);
+
+            PagSeguroDirectPayment.setSessionId('{!! $session_id !!}');
         PagSeguroDirectPayment.createCardToken({
-            cardNumber: Android.getCardNumber(),
-            cvv: Android.getCvv(),
-            expirationMonth: Android.getMonth(),
-            expirationYear: Android.getYear(),
+            cardNumber: '4271671604887028',
+            cvv: '063',
+            expirationMonth: '09',
+            expirationYear: '2021',
             success: function(response){
+
+            $("a").text(PagSeguroDirectPayment.ready);
             },
             error: function(response){
+                window.console.log('error');
+                window.console.log(response);
             },
             complete: function(response){
-                Android.teste()
+
+                window.console.log('complete');
+                window.console.log(response);
             }
         });
-    });
+
+        }, 10000);
+
+
+
+
+        });
 
     </script>
 

@@ -117,6 +117,7 @@
             </LinearLayout>
 
         </LinearLayout>
+
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
@@ -126,12 +127,5 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_view_agenda" />
-
-
-    <WebView
-        android:id="@+id/webView"
-        android:layout_width="0.1dp"
-        android:layout_height="0.1dp"></WebView>
-
 
 </android.support.design.widget.CoordinatorLayout>

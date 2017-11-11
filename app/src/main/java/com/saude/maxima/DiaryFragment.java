@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +61,7 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
     FloatingActionButton btnPayment;
     int year, month, day, hour, minute;
     EditText cardNumber;
+    WebView webView;
 
     View view;
 
@@ -68,9 +70,16 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
     }
 
     @Override
+    public void onInflate(Context context, AttributeSet attrs, Bundle savedInstanceState) {
+        super.onInflate(context, attrs, savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_diary, container, false);
         this.context = getContext();
+
+        webView = (WebView) view.findViewById(R.id.webView);
 
         txtPackage = (TextView) view.findViewById(R.id.txtPackage);
         txtValue = (TextView) view.findViewById(R.id.txtValue);
@@ -103,7 +112,17 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
             this.onClickBtnRemove();
             this.onClickBtnEdit();
 
+            new getPagseguroSessionId(null).execute(Routes.pagSeguro[0]);
+
             btnPayment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, PaymentActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            /*btnPayment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     new MDDialog.Builder(context)
@@ -117,7 +136,6 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
                             .setPositiveButton("Finalizar", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    new getPagseguroSessionId(null).execute(Routes.pagSeguro[0]);
                                     View root = view.getRootView();
                                     CreditCard creditCard = new CreditCard();
                                     creditCard.setPagseguroSessionId(context);
@@ -140,7 +158,7 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
                             .create()
                             .show();
                 }
-            });
+            });*/
         }else{
             llNoHasPackage = (LinearLayout) view.findViewById(R.id.llNoHasPackage);
             llNoHasPackage.setVisibility(View.VISIBLE);
@@ -210,8 +228,8 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
     }
 
     private void getPaymentToken(CreditCard creditCard){
-        WebView webView = (WebView) view.findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setSupportZoom(false);
         webView.addJavascriptInterface(creditCard, "Android");
         webView.loadUrl("file:///android_asset/index.html");
     }

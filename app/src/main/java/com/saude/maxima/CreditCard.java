@@ -29,6 +29,7 @@ public class CreditCard /*extends Observable */{
 
     @JavascriptInterface
     public String getCardNumber() {
+        Log.i("cardNumber: ", cardNumber);
         return cardNumber;
     }
 
@@ -112,8 +113,8 @@ public class CreditCard /*extends Observable */{
     }
 
     @JavascriptInterface
-    public void teste(){
-        Log.i("token", "aqui");
+    public void teste(String teste){
+
     }
 
     public String getToken() {
@@ -123,8 +124,8 @@ public class CreditCard /*extends Observable */{
     @JavascriptInterface
     public void setToken(String token) {
 
-        Log.i("token", "Token: " + token);
-        this.token = token;
+        Log.i("setToken", "Token: " + token);
+        //this.token = token;
 
         //setChanged();
         //notifyObservers();

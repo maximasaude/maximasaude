@@ -7,9 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import br.com.uol.pslibs.checkout_in_app.PSCheckout;
-import br.com.uol.pslibs.checkout_in_app.wallet.util.PSCheckoutConfig;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,14 +26,6 @@ public class PaymentFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_payment, container, false);
 
-        PSCheckoutConfig psCheckoutConfig = new PSCheckoutConfig();
-        psCheckoutConfig.setSellerEmail(SELLER_EMAIL);
-        psCheckoutConfig.setSellerToken(SELLER_TOKEN);
-//Informe o fragment container
-        psCheckoutConfig.setContainer(R.id.fragment_container);
-
-//Inicializa apenas os recursos de pagamento transparente e boleto
-        PSCheckout.initTransparent(getActivity(), psCheckoutConfig);
 
         // Inflate the layout for this fragment
         return view;
