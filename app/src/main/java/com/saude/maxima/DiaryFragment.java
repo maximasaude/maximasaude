@@ -11,7 +11,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.saude.maxima.utils.Payment;
 import com.saude.maxima.utils.Diary;
 import com.saude.maxima.utils.DiaryHour;
 import com.saude.maxima.utils.ManagerSharedPreferences;
@@ -34,13 +34,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-
-import cn.carbs.android.library.MDDialog;
 
 public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, DialogInterface.OnCancelListener{
 
@@ -227,7 +224,7 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
         });
     }
 
-    private void getPaymentToken(CreditCard creditCard){
+    private void getPaymentToken(Payment creditCard){
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setSupportZoom(false);
         webView.addJavascriptInterface(creditCard, "Android");
