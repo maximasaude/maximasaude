@@ -295,7 +295,7 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
         JSONObject order = new JSONObject();
         try {
             order.put("year", year);
-            order.put("month", month < 10 ? "0"+month : month);
+            order.put("month", month < 10 ? "0"+(month+1) : (month+1));
             order.put("day", day < 10 ? "0"+day : day);
             order.put("hour", hourOfDay);
             order.put("minute", min);
@@ -376,7 +376,7 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
                             int y, m, d;
                             String[] available_date = diaries.get(i).getAvailableDate().split("-");
                             y = Integer.parseInt(available_date[0]);
-                            m = Integer.parseInt(available_date[1]) + 1;
+                            m = Integer.parseInt(available_date[1]) - 1;
                             d = Integer.parseInt(available_date[2]);
 
                             Calendar cAux = Calendar.getInstance();

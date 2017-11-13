@@ -101,7 +101,7 @@ public class LoginFragment extends Fragment {
                         params = "username="+email;
                         params += "&password="+password+"&grant_type=password";
                         params += "&client_id=2";
-                        params += "&client_secret=tcJ759AAZmYG67KiNr2xz9kCO6iWn98inRRvLIue";
+                        params += "&client_secret=5ZjdO4slCGS0bC0E2rSywriqRlqFS5E5f0PjojTi";
                         params += "&scope=";
                         new getAccessTokenUser().execute(Routes.takeToken);
                     }

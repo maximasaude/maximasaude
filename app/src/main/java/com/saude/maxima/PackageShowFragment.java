@@ -244,7 +244,7 @@ public class PackageShowFragment extends Fragment implements DatePickerDialog.On
         JSONObject order = new JSONObject();
         try {
             order.put("year", year);
-            order.put("month", month < 10 ? "0"+month : month);
+            order.put("month", month < 10 ? "0"+(month+1) : (month+1));
             order.put("day", day < 10 ? "0"+day : day);
             order.put("hour", hourOfDay);
             order.put("minute", min);
