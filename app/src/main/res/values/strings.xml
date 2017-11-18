@@ -6,12 +6,23 @@
     <string name="action_settings">Settings</string>
     <string name="settings">Configurações</string>
     <string name="footer">Rodapé</string>
-    <string name="logout">Sair</string>
+    <string name="logout">Deslogar</string>
+    <string name="close">Fechar</string>
     <string name="terms">Termos de uso</string>
     <string name="help">Ajuda</string>
     <string name="about_us">Sobre nós</string>
+    <string name="contact_us">Fale conosco</string>
+    <string name="the_maxima">A Máxima Saúde</string>
+    <string name="maxima_saude">Máxima Saúde</string>
+    <string name="save">Salvar</string>
+    <string name="add">Adicionar</string>
     <string name="notifications">Notificações</string>
-    <string name="add_newsletter">Inscreva-se na nossa Newsletter para receber novidades</string>
+    <string name="add_newsletter">Inscreva-se na nossa Newsletter</string>
+
+    <string-array name="titles_tab_report">
+        <item>Agendamentos</item>
+        <item>Avaliações</item>
+    </string-array>
 
     <string-array name="titles_tab">
         <item>Detalhe</item>
@@ -23,6 +34,17 @@
     <string name="edit">Editar</string>
     <string name="remove">Remover</string>
     <string name="scheduled_date">Data agendada</string>
+    <string name="local">Local</string>
+    <string name="district">Bairro</string>
+    <string name="supplier">Fornecedor</string>
+    <string name="suppliers">Fornecedores</string>
+    <string name="gym">Academia</string>
+    <string name="address">Endereço</string>
+    <string name="address_complement">Complemento</string>
+    <string name="state">Estado</string>
+    <string name="zip">CEP</string>
+    <string name="number">Número</string>
+    <string name="city">Cidade</string>
     <string name="value">Valor</string>
     <string name="no_has_packages">Não há nenhum pacote selecionado</string>
 
@@ -39,9 +61,16 @@
     <string name="home">Tela Inicial</string>
     <string name="do_not_have_an_account_create_a">Não tem uma conta? Crie uma</string>
     <string name="email">E-mail</string>
+    <string name="empty">Vazio</string>
+    <string name="you_do_not_have_schedules">Você não possui Agendamentos</string>
     <string name="password">Senha</string>
     <string name="login">Login</string>
     <string name="name">Nome</string>
+    <string name="cpf">CPF</string>
+    <string name="rg">RG</string>
+    <string name="birth_date">Data de Nascimento</string>
+    <string name="phone">Telefone</string>
+    <string name="cell_phone">Celular</string>
     <string name="register">Cadastrar</string>
     <string name="cancel">Cancelar</string>
     <string name="man">Homem</string>
@@ -56,4 +85,44 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_package_show">PackageShowActivity</string>
     <string name="detail">Detalhe</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="date">Data</string>
+    <string name="weight">Peso</string>
+    <string name="height">Altura</string>
+    <string name="right_arm">Braço Direito</string>
+    <string name="left_arm">Braço Esquerdo</string>
+    <string name="tummy">Abdômen</string>
+    <string name="hip">Quadril</string>
+    <string name="coxa_proximal">Coxa Proximal</string>
+    <string name="coxa_medial">Coxa Medial</string>
+    <string name="coxa_distal">Coxa Distal</string>
+    <string name="right_leg">Perna Direita</string>
+    <string name="left_leg">Perna Esquerda</string>
+    <string name="forearm">Anti Braço</string>
+    <string name="chest">Tórax</string>
+    <string name="waist">Cintura</string>
+    <string name="order_conclusion">Pedido Efeituado com sucesso</string>
+    <string name="payment">Pagamento</string>
+    <string name="go_to_dashboard">Ir para Dashboard</string>
+    <string name="go_to_home">Ir para Home</string>
+    <string name="finished_order">Pedido Finalizado</string>
+    <string name="package_value">Valor do Pacote</string>
+    <string name="title_activity_report">ReportActivity</string>
+    <string name="title_activity_create_user">Cadastro</string>
+    <string name="title_activity_edit_user">Editar Perfil</string>
+    <string name="title_activity_report_evaluation">Relatório de Avaliação</string>
+    <string name="title_activity_login">Login</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">E-mail Inválido</string>
+    <string name="error_invalid_password">Senha inválida</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
 </resources>

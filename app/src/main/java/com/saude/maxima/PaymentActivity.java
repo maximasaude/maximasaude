@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -22,12 +23,26 @@ public class PaymentActivity extends AppCompatActivity {
     ManagerSharedPreferences managerSharedPreferences;
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        // add back arrow to toolbar
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         webView = (WebView) findViewById(R.id.webView);
         progressBar = (ProgressBar) findViewById(R.id.progress);
@@ -43,13 +58,18 @@ public class PaymentActivity extends AppCompatActivity {
 
         Auth auth = new Auth(this);
 
-        Payment payment = new Payment();
+        Payment payment = new Payment(this);
         payment.setAuth(auth.getAuth());
         payment.setItems(managerSharedPreferences.get("order"));
 
         webView.addJavascriptInterface(payment, "Payment");
 
-        webView.loadUrl("http://10.0.0.104:8000/pagseguro/get_view");
+        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webView.getSettings().setAppCacheEnabled(false);
+        webView.clearCache(true);
+
+        webView.loadUrl("http://pi.mirandafitness.com.br/pagseguro/get_view");
+
 
         webView.setWebViewClient(new WebViewClient(){
             @Override

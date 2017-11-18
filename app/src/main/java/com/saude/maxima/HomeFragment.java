@@ -1,10 +1,12 @@
 package com.saude.maxima;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -21,6 +23,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -66,7 +69,12 @@ public class HomeFragment extends Fragment implements RecyclerViewOnClickListene
 
     ViewFlipper viewFlipper;
 
+    AutoCompleteTextView edtName;
+    AutoCompleteTextView edtEmail;
+
+
     ProgressDialog progressDialog;
+
 
     LinearLayoutManager linearLayoutManager;
     GridLayoutManager gridLayoutManager;
@@ -78,6 +86,9 @@ public class HomeFragment extends Fragment implements RecyclerViewOnClickListene
     }
 
 
+    private void refreshContent(){
+        ((Activity) context).recreate();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -87,6 +98,13 @@ public class HomeFragment extends Fragment implements RecyclerViewOnClickListene
 
         //Swipe Refresh Layout
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
+            @Override
+            public void onRefresh() {
+                refreshContent();
+            }
+        });
 
         viewFlipper = (ViewFlipper) view.findViewById(R.id.view_fliper);
 
@@ -100,6 +118,12 @@ public class HomeFragment extends Fragment implements RecyclerViewOnClickListene
 
         //viewFlipper.setOnTouchListener(onSwipeTouchListener);
         viewFlipper.addOnLayoutChangeListener(onLayoutChangeListenerViewFlipper);
+
+        edtEmail = (AutoCompleteTextView) view.findViewById(R.id.edtEmail);
+        edtName = (AutoCompleteTextView) view.findViewById(R.id.edtName);
+
+        edtEmail.clearFocus();
+        edtName.clearFocus();
 
 
         //Método executado ao tocar no viewflipper

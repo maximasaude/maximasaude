@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.saude.maxima.R;
 import com.saude.maxima.interfaces.RecyclerViewOnClickListenerHack;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +44,22 @@ public class PackagesAdapter extends RecyclerView.Adapter<PackagesAdapter.Packag
 
     @Override
     public void onBindViewHolder(PackagesViewHolder holder, int position) {
-        holder.img.setImageResource(R.drawable.android_1);
-        holder.value.setText(Double.toString(packages.get(position).getValue()));
+
+        if(packages.get(position).getName().equals("Simples")){
+            holder.img.setImageResource(R.drawable.simples);
+        }else if(packages.get(position).getName().equals("Completo")){
+            holder.img.setImageResource(R.drawable.completo);
+        }else{
+            holder.img.setImageResource(R.drawable.premium);
+        }
+
+
+        NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
+        double value;
+        value = packages.get(position).getValue();
+
+        holder.value.setText(numberFormat.format(value));
+
         holder.name.setText(packages.get(position).getName());
         holder.description.setText(packages.get(position).getDescription());
     }

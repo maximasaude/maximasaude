@@ -1,36 +1,32 @@
 package com.saude.maxima;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.saude.maxima.utils.Auth;
 import com.saude.maxima.utils.Routes;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-
-public class LoginFragment extends Fragment {
+public class LoginActivity extends AppCompatActivity {
 
     EditText edtEmail, edtPassword;
     Button btnLogin;
@@ -39,79 +35,55 @@ public class LoginFragment extends Fragment {
     TextView emailUser;
     TextView nameUser;
 
-    private Auth auth;
-    private JSONObject user;
+    ProgressBar progressBar;
 
-
-    ProgressDialog progressDialog;
+    Activity activity;
 
     String url = "";
     String params = "";
+    Toolbar toolbar;
 
-
-    public LoginFragment() {
-        // Required empty public constructor
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
 
-        //Instancia para a classe auth
-        this.auth = new Auth(getActivity().getApplicationContext());
-
-        //Pegando os dados do usuário, caso esteja logado
-        this.user = this.auth.getAuth();
+        activity = this;
 
         //Verifico se o usuário está logado
         if(Auth.isLogged()){
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.content_fragment, new HomeFragment(), "home").commit();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
         }
 
-        View view = inflater.inflate(R.layout.fragment_login, container, false);
-        edtEmail = (EditText) view.findViewById(R.id.edtEmail);
-        edtPassword = (EditText) view.findViewById(R.id.edtPassword);
-        btnLogin = (Button) view.findViewById(R.id.btnLogin);
-        txtCreate = (TextView) view.findViewById(R.id.txtCreate);
-        progressDialog = new ProgressDialog(getContext());
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        // add back arrow to toolbar
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+        edtEmail = (EditText) findViewById(R.id.edtEmail);
+        edtPassword = (EditText) findViewById(R.id.edtPassword);
+        btnLogin = (Button) findViewById(R.id.btnLogin);
+        txtCreate = (TextView) findViewById(R.id.txtCreate);
+        progressBar = (ProgressBar) findViewById(R.id.progress);
+    }
 
-        txtCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AddUserFragment addUserFragment = new AddUserFragment();
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.content_fragment, addUserFragment, "add_user");
-                fragmentTransaction.addToBackStack("add_user");
-                fragmentTransaction.commit();
-            }
-        });
-
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(isOnline()){
-                    String email = edtEmail.getText().toString();
-                    String password = edtPassword.getText().toString();
-                    if(email.isEmpty() || password.isEmpty()){
-                        edtEmail.setText(R.string.field_required);
-                        edtPassword.setText(R.string.field_required);
-                        Toast.makeText(getContext(), "Preencha os campos", Toast.LENGTH_SHORT).show();
-                    }else {
-                        params = "username="+email;
-                        params += "&password="+password+"&grant_type=password";
-                        params += "&client_id=2";
-                        params += "&client_secret=c2iGjEuk2ThI0LzXSGkct2MhTvP7j1wBpkbHBIW1";
-                        params += "&scope=";
-                        new getAccessTokenUser().execute(Routes.takeToken);
-                    }
-                }else{
-                    Toast.makeText(getContext(), "Não há conexão com a internet", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        // Inflate the layout for this fragment
-        return view;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -120,9 +92,36 @@ public class LoginFragment extends Fragment {
      */
     private boolean isOnline() {
         ConnectivityManager cm =
-                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    public void login(View view){
+        if(isOnline()){
+            String email = edtEmail.getText().toString();
+            String password = edtPassword.getText().toString();
+            if(email.isEmpty() || password.isEmpty()){
+                edtEmail.setText(R.string.field_required);
+                edtPassword.setText(R.string.field_required);
+                Toast.makeText(getApplicationContext(), "Preencha os campos", Toast.LENGTH_SHORT).show();
+            }else {
+                params = "username="+email;
+                params += "&password="+password+"&grant_type=password";
+                params += "&client_id=2";
+                params += "&client_secret=yBDWAYBtobOUEYH4XEM3ELy6NKpse9rUqfUSSfru";
+                params += "&scope=";
+                new getAccessTokenUser().execute(Routes.takeToken);
+            }
+        }else{
+            Toast.makeText(getApplicationContext(), "Não há conexão com a internet", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public void create(View view){
+        Intent intent = new Intent(this, CreateUserActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -133,9 +132,7 @@ public class LoginFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog.setMessage(getString(R.string.executing));
-            progressDialog.show();
-            progressDialog.setCancelable(false);
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         /**
@@ -163,16 +160,16 @@ public class LoginFragment extends Fragment {
                     //Fazendo requisição para fazer login e buscar os dados do usuário
                     new getUser(tokenType, accessToken, params).execute(Routes.takeUser);
                 }else{
-                    Toast.makeText(getContext(), "Usuário ou Senha inválidos", Toast.LENGTH_LONG).show();
-                    progressDialog.dismiss();
+                    Toast.makeText(getApplicationContext(), "Usuário ou Senha inválidos", Toast.LENGTH_LONG).show();
+
+                    progressBar.setVisibility(View.GONE);
                 }
             }catch (JSONException e){
-                progressDialog.dismiss();
+                progressBar.setVisibility(View.GONE);
             }
         }
 
     }
-
     /**
      * Implementation of AsyncTask designed to fetch data from the network.
      */
@@ -203,28 +200,24 @@ public class LoginFragment extends Fragment {
             try{
                 if(!result.has("error")){
 
-                    //Desabilitando o progresso
-                    progressDialog.dismiss();
-
                     //Pegando os dados de retorno
                     JSONObject data = result.getJSONObject("success");
 
                     //Setando o email do usuário no cabeçalho do menu lateral
-                    emailUser = (TextView) getActivity().findViewById(R.id.email);
-                    emailUser.setText(data.getString("name"));
+                    //emailUser = (TextView) findViewById(R.id.email);
+                    //emailUser.setText(data.getString("name"));
 
                     //Setando o nome do usuário no cabeçalho do menu lateral
-                    nameUser = (TextView) getActivity().findViewById(R.id.name);
-                    nameUser.setText(data.getString("email"));
+                    //nameUser = (TextView) findViewById(R.id.name);
+                    //nameUser.setText(data.getString("email"));
 
                     //Adicionando os dados do usuário
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);
+                    SharedPreferences sharedPreferences = activity.getSharedPreferences("user", Context.MODE_PRIVATE);
                     sharedPreferences.edit().putString("user", data.toString()).commit();
 
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    getActivity().finish();
-                    startActivity(intent);
-
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    setResult(RESULT_OK, intent);
+                    finish();
 
                     //Iniciando a transição para a tela home
                     //FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -234,7 +227,7 @@ public class LoginFragment extends Fragment {
                     //fragmentTransaction.commit();
                 }
             }catch (JSONException e){
-                progressDialog.dismiss();
+                progressBar.setVisibility(View.GONE);
             }
         }
 
@@ -245,8 +238,6 @@ public class LoginFragment extends Fragment {
         @Override
         protected void onCancelled(JSONObject result) {
         }
-
-
 
         public String getType() {
             return type;
@@ -274,7 +265,4 @@ public class LoginFragment extends Fragment {
 
 
     }
-
-
-
 }

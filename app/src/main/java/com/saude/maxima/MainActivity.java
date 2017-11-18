@@ -8,11 +8,8 @@ import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -21,15 +18,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.saude.maxima.utils.Auth;
+import com.saude.maxima.utils.ManagerSharedPreferences;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -38,6 +36,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     TextView name;
     TextView email;
+
+    LinearLayout navHeader;
+    LinearLayout navContentLogo;
 
     private Auth auth;
     private JSONObject user;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Log.i("Script alterado", key+"updated");
         }
     };
+
 
 
     /**
@@ -70,11 +72,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+
+        navHeader = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.nav_header);
+        navContentLogo = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.nav_content_logo);
 
         if(!isOnline()){
 
@@ -89,13 +98,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
             //sharedPreferences.registerOnSharedPreferenceChangeListener(spChange);
-
             if (savedInstanceState == null) {
                 HomeFragment homeFragment = new HomeFragment();
-                FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                fragmentTransaction.add(R.id.content_fragment, homeFragment);
-                fragmentTransaction.commit();
+                FragmentTransaction fragmentHomeTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentHomeTransaction.add(R.id.content_fragment, homeFragment);
+                fragmentHomeTransaction.commit();
             }
+
 
 
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -127,7 +136,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             this.addCallBackChangeFragment();
 
             //Verifico se o usuário está logado
-            if (this.auth.isLogged()) {
+            if (Auth.isLogged()) {
+                navContentLogo.setVisibility(View.GONE);
+                navHeader.setVisibility(View.VISIBLE);
                 //Setando false para o menu login não ficar visível
                 navigationView.getMenu().getItem(1).setVisible(false);
                 navigationView.getMenu().findItem(R.id.optionUser).setVisible(true);
@@ -148,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+            //finish();
         }
     }
 
@@ -189,9 +201,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
-            startActivity(settings);
+        if (id == R.id.action_close) {
+            finish();
+            System.exit(0);
+        }else if(id == R.id.action_logout){
+            ManagerSharedPreferences managerSharedPreferences = new ManagerSharedPreferences(this);
+            managerSharedPreferences.remove("user");
+            recreate();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -209,15 +225,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentTransaction.replace(R.id.content_fragment, homeFragment, "home").commit();
 
         }else if (id == R.id.nav_login) {
-            LoginFragment loginFragment = new LoginFragment();
-            FragmentTransaction fragmentTransaction = fm.beginTransaction();
-            fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
-            fragmentTransaction.replace(R.id.content_fragment, loginFragment, "login").commit();
+            //LoginFragment loginFragment = new LoginFragment();
+            //FragmentTransaction fragmentTransaction = fm.beginTransaction();
+            //fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
+            //fragmentTransaction.replace(R.id.content_fragment, loginFragment, "login").commit();
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivityForResult(intent, 2);
         }else if (id == R.id.nav_cart) {
             DiaryFragment diaryFragment = new DiaryFragment();
             FragmentTransaction fragmentTransaction = fm.beginTransaction();
             fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
             fragmentTransaction.replace(R.id.content_fragment, diaryFragment, "diary").commit();
+        }else if (id == R.id.nav_report) {
+            Intent intent = new Intent(this, ReportActivity.class);
+            startActivity(intent);
+        }else if (id == R.id.nav_perfil) {
+            Intent intent = new Intent(this, EditUserActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -225,7 +249,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-   /* @Override
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == 2) {
+            recreate();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    /* @Override
     protected void onDestroy() {
         super.onDestroy();
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(spChange);
@@ -238,4 +276,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(spChange);
         sharedPreferences.edit().clear().commit();
     }*/
+
+
+
+
 }

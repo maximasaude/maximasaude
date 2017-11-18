@@ -5,11 +5,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +20,13 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.saude.maxima.utils.Auth;
 import com.saude.maxima.utils.Payment;
 import com.saude.maxima.utils.Diary;
 import com.saude.maxima.utils.DiaryHour;
@@ -48,6 +54,7 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
     TextView txtDate;
     Button btnEdit;
     Button btnRemove;
+    ImageView imgPackage;
     TextView txtNoHasPackage;
     LinearLayout llNoHasPackage;
     LinearLayout llContent;
@@ -59,9 +66,11 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
     int year, month, day, hour, minute;
     EditText cardNumber;
     WebView webView;
+    ProgressBar progressBar;
 
     View view;
 
+    String params = null;
     public DiaryFragment() {
         // Required empty public constructor
     }
@@ -81,82 +90,109 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
         txtPackage = (TextView) view.findViewById(R.id.txtPackage);
         txtValue = (TextView) view.findViewById(R.id.txtValue);
         txtDate = (TextView) view.findViewById(R.id.txtDate);
+        imgPackage = (ImageView) view.findViewById(R.id.img_package);
 
         managerSharedPreferences = new ManagerSharedPreferences(this.context);
         btnPayment = (FloatingActionButton) view.findViewById(R.id.btnPayment);
 
-        if(managerSharedPreferences.has("order")){
+
+
+        if (managerSharedPreferences.has("order")) {
             btnRemove = (Button) view.findViewById(R.id.btnRemove);
             btnEdit = (Button) view.findViewById(R.id.btnEdit);
             try {
                 JSONObject objOrder = new JSONObject(managerSharedPreferences.get("order").toString());
                 JSONObject objPackage = new JSONObject(objOrder.get("package").toString());
-                String dateFormated = objOrder.getString("day")+ "/" +
-                        objOrder.getString("month") + "/"+ objOrder.getString("year")+" "+
-                        objOrder.getString("hour")+":"+objOrder.getString("minute");
+                String dateFormated = objOrder.getString("day") + "/" +
+                        objOrder.getString("month") + "/" + objOrder.getString("year") + " " +
+                        objOrder.getString("hour") + ":" + objOrder.getString("minute");
                 txtPackage.setText(objPackage.getString("name"));
                 txtDate.setText(dateFormated);
+
+                if(objPackage.getString("name").equals("Simples")){
+                    imgPackage.setImageResource(R.drawable.simples);
+                }else if(objPackage.getString("name").equals("Completo")){
+                    imgPackage.setImageResource(R.drawable.completo);
+                }else{
+                    imgPackage.setImageResource(R.drawable.premium);
+                }
+
+                params = "available_date=" + objOrder.getString("year") + "-" + objOrder.getString("month") + "-" + objOrder.getString("day");
+                params += "&available_hour=" + objOrder.getString("hour") + ":" + objOrder.getString("minute");
 
                 NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
                 double value;
                 value = Double.parseDouble(objPackage.getString("value"));
 
                 txtValue.setText(numberFormat.format(value));
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            progressBar = (ProgressBar) view.findViewById(R.id.progress);
 
             this.onClickBtnRemove();
             this.onClickBtnEdit();
 
-            new getPagseguroSessionId(null).execute(Routes.pagSeguro[0]);
+            //new getPagseguroSessionId(null).execute(Routes.pagSeguro[0]);
 
             btnPayment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, PaymentActivity.class);
-                    startActivity(intent);
+                    if(!Auth.isLogged()) {
+                        Intent intent = new Intent(getContext(), LoginActivity.class);
+                        startActivity(intent);
+                    }else {
+                        //Se há conexão com a internet
+                        if (isOnline()) {
+                            String url = Routes.verifyDateAndHour[0] + "?" + params;
+                            progressBar.setVisibility(View.VISIBLE);
+                            new getDateAndHourAvailable(null).execute(url);
+                        } else {
+                            Toast.makeText(getContext(), "Não há conexão com a internet", Toast.LENGTH_LONG).show();
+                        }
+                    }
                 }
             });
 
-            /*btnPayment.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    new MDDialog.Builder(context)
-                            .setTitle("Pagamento")
-                            .setNegativeButton("Cancelar", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
+        /*btnPayment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new MDDialog.Builder(context)
+                        .setTitle("Pagamento")
+                        .setNegativeButton("Cancelar", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
 
-                                }
-                            })
-                            .setPositiveButton("Finalizar", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    View root = view.getRootView();
-                                    CreditCard creditCard = new CreditCard();
-                                    creditCard.setPagseguroSessionId(context);
-                                    creditCard.setCardNumber(getViewContent(root, R.id.card_number));
-                                    creditCard.setName(getViewContent(root, R.id.name));
-                                    creditCard.setMonth(getViewContent(root, R.id.month));
-                                    creditCard.setYear(getViewContent(root, R.id.year));
-                                    creditCard.setCvv(getViewContent(root, R.id.cvv));
-                                    creditCard.setParcels(Integer.parseInt(getViewContent(root, R.id.parcels)));
-                                    getPaymentToken(creditCard);
-                                }
-                            })
-                            .setContentViewOperator(new MDDialog.ContentViewOperator() {
-                                @Override
-                                public void operate(View contentView) {
-                                    setOnCardNumberClickListener(contentView);
-                                }
-                            })
-                            .setContentView(R.layout.credit_card)
-                            .create()
-                            .show();
-                }
-            });*/
-        }else{
+                            }
+                        })
+                        .setPositiveButton("Finalizar", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                View root = view.getRootView();
+                                CreditCard creditCard = new CreditCard();
+                                creditCard.setPagseguroSessionId(context);
+                                creditCard.setCardNumber(getViewContent(root, R.id.card_number));
+                                creditCard.setName(getViewContent(root, R.id.name));
+                                creditCard.setMonth(getViewContent(root, R.id.month));
+                                creditCard.setYear(getViewContent(root, R.id.year));
+                                creditCard.setCvv(getViewContent(root, R.id.cvv));
+                                creditCard.setParcels(Integer.parseInt(getViewContent(root, R.id.parcels)));
+                                getPaymentToken(creditCard);
+                            }
+                        })
+                        .setContentViewOperator(new MDDialog.ContentViewOperator() {
+                            @Override
+                            public void operate(View contentView) {
+                                setOnCardNumberClickListener(contentView);
+                            }
+                        })
+                        .setContentView(R.layout.credit_card)
+                        .create()
+                        .show();
+            }
+        });*/
+        } else {
             llNoHasPackage = (LinearLayout) view.findViewById(R.id.llNoHasPackage);
             llNoHasPackage.setVisibility(View.VISIBLE);
             llContent = (LinearLayout) view.findViewById(R.id.llContent);
@@ -165,6 +201,7 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
             txtNoHasPackage.setText("Não há nenhum pacote selecionado");
             Snackbar.make(view, "Não há nenhum pacote selecionado", Snackbar.LENGTH_LONG).show();
         }
+
 
 
         // Inflate the layout for this fragment
@@ -550,5 +587,81 @@ public class DiaryFragment extends Fragment implements DatePickerDialog.OnDateSe
         private void setParams(String params) {
             this.params = params;
         }
+    }
+
+    public class getDateAndHourAvailable extends AsyncTask<String, Void, JSONObject> {
+
+        String params;
+        private JSONArray schedules;
+
+        private getDateAndHourAvailable(String params) {
+            this.setParams(params);
+        }
+
+        /**
+         * Defines work to perform on the background thread.
+         */
+        @Override
+        protected JSONObject doInBackground(String... urls) {
+            return Connection.get(urls[0], this.getParams());
+        }
+
+        /**
+         * Updates the DownloadCallback with the result.
+         */
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            super.onPostExecute(result);
+
+            if (!result.has("errors")) {
+                try {
+                    JSONObject objOrder = result.getJSONObject("success");
+                    Intent intent = new Intent(context, PaymentActivity.class);
+                    startActivity(intent);
+
+                    progressBar.setVisibility(View.GONE);
+
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
+            }else{
+                try {
+                    if (!result.getString("errors").equals("false")) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getContext(), result.getJSONObject("errors").getString("response"), Toast.LENGTH_SHORT).show();
+                    }
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+
+            progressBar.setVisibility(View.GONE);
+        }
+
+        /**
+         * Override to add special behavior for cancelled AsyncTask.
+         */
+        @Override
+        protected void onCancelled(JSONObject result) {
+        }
+
+        private String getParams() {
+            return params;
+        }
+
+        private void setParams(String params) {
+            this.params = params;
+        }
+    }
+
+    /**
+     * Função que verifica se há conexão com a internet
+     * @return boolean
+     */
+    private boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }

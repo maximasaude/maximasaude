@@ -103,13 +103,11 @@ public class AddUserFragment extends Fragment {
                     if(name.isEmpty() || email.isEmpty() || password.isEmpty()){
                         Toast.makeText(getContext(), "Preencha os campos", Toast.LENGTH_SHORT).show();
                     }else {
-                        url = "http://10.0.0.104:8000/api/users";
                         params = "name="+name;
                         params += "&email="+email;
                         params += "&password="+password;
                         params += "&confirm_password="+confirmPassword;
                         params += "&gender="+sex;
-                        Log.i("route", Routes.createUser);
                         new create().execute(Routes.createUser);
                     }
                 }else{

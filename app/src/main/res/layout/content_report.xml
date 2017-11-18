@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.saude.maxima.ReportActivity"
+    tools:showIn="@layout/activity_report">
+
+<!--    <TableLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="match_parent"
+        android:weightSum="3"
+        android:layout_height="wrap_content">
+        <TableRow
+            android:padding="10dp">
+
+            <TextView
+                android:textAlignment="center"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:id="@+id/txtPackage"
+                android:text="@string/package_name"/>
+
+            <TextView
+                android:textAlignment="center"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:id="@+id/txtScheduledDate"
+                android:text="@string/scheduled_date"/>
+            <TextView
+                android:textAlignment="center"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:id="@+id/txtLocal"
+                android:text="@string/local"/>
+
+        </TableRow>
+    </TableLayout>-->
+
+
+
+    <android.support.v4.view.ViewPager
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:id="@+id/view_pager"/>
+
+    <!--<android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:id="@+id/recycleView"
+        android:layout_height="wrap_content"/>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:visibility="invisible" />-->
+
+</RelativeLayout>

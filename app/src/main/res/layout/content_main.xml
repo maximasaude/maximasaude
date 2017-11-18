@@ -15,18 +15,24 @@
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"></LinearLayout>-->
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/content_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:clickable="true" />
+        <!--<LinearLayout
             android:id="@+id/content_fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <!--<fragment
+            &lt;!&ndash;<fragment
                 android:id="@+id/fragment"
                 android:name="com.saude.maxima.LoginFragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_top_10" />-->
-        </LinearLayout>
+                android:layout_marginTop="@dimen/margin_top_10" />&ndash;&gt;
+        </LinearLayout>-->
 
 
 </LinearLayout>

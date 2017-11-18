@@ -387,7 +387,7 @@ public class PackageShowFragment extends Fragment implements DatePickerDialog.On
             super.onPostExecute(result);
 
             try{
-                if(!result.has("error")) {
+                if(!result.has("errors")) {
                     JSONArray arrPackage = result.getJSONArray("success");
 
                     diaries = new LinkedList<>();
@@ -475,12 +475,13 @@ public class PackageShowFragment extends Fragment implements DatePickerDialog.On
                         progressDialog.dismiss();
                         Toast.makeText(getActivity(), "Não existe datas disponíveis", Toast.LENGTH_LONG).show();
                     }
+                }else{
+                    Toast.makeText(getActivity(), "Não existe datas disponíveis", Toast.LENGTH_LONG).show();
                 }
             }catch (JSONException e){
                 progressDialog.dismiss();
             }
             progressDialog.dismiss();
-
         }
 
 

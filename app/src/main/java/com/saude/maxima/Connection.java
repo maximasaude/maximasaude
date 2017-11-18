@@ -162,13 +162,7 @@ public class Connection {
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
-            urlConnection.setRequestProperty("Accept", "application/json");
-
-            if(params != null) {
-                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8");
-                outputStreamWriter.write(params);
-                outputStreamWriter.flush();
-            }
+            //urlConnection.setRequestProperty("Accept", "application/json");
 
             urlConnection.connect();
 
@@ -199,6 +193,11 @@ public class Connection {
                         result.put("success", new JSONArray(response.toString()));
                     }catch (JSONException ex){
                         ex.printStackTrace();
+                        try{
+                            result.put("success", response.toString());
+                        }catch (JSONException exx){
+                            e.printStackTrace();
+                        }
                     }
                     /*try {
                         result.put("success", response.toString());
@@ -210,6 +209,7 @@ public class Connection {
                 return result;
             }else{
                 bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getErrorStream(), "UTF-8"));
+
                 StringBuffer response = new StringBuffer();
                 String line;
 

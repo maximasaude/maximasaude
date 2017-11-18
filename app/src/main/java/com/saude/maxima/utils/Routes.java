@@ -27,4 +27,22 @@ public class Routes extends Config{
             getProtocol()+getHost()+getPort()+"/pagseguro/get_session_id"
     };
 
+    public static final String[] order = {
+            getProtocol()+getHost()+getPort()+"/api/orders/{user_id}"
+    };
+
+    public static final String[] verifyDateAndHour = {
+            getProtocol()+getHost()+getPort()+"/api/orders/verify_date_and_hour"
+    };
+
+    public static final String[] schedules = {
+            getProtocol()+getHost()+getPort()+"/api/schedules",
+            getProtocol()+getHost()+getPort()+"/api/schedules/get_schedules_user/{id}",
+    };
+
+    public static final String[] evaluations = {
+            getProtocol()+getHost()+getPort()+"/api/evaluations",
+            getProtocol()+getHost()+getPort()+"/api/evaluations/get_evaluations_user/{id}",
+    };
+
 }
