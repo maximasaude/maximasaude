@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                 params = "username="+email;
                 params += "&password="+password+"&grant_type=password";
                 params += "&client_id=2";
-                params += "&client_secret=yBDWAYBtobOUEYH4XEM3ELy6NKpse9rUqfUSSfru";
+                params += "&client_secret=GUmSvywQ3uUuWEnD2Uv9enqq3j8jtMjyU59Cb0qT";
                 params += "&scope=";
                 new getAccessTokenUser().execute(Routes.takeToken);
             }
