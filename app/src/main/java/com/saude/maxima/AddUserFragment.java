@@ -84,10 +84,10 @@ public class AddUserFragment extends Fragment {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.content_fragment, new HomeFragment(), "home");
-                fragmentTransaction.addToBackStack("home");
-                fragmentTransaction.commit();
+                //FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                //fragmentTransaction.replace(R.id.content_fragment, new HomeFragment(), "home");
+                //fragmentTransaction.addToBackStack("home");
+                //fragmentTransaction.commit();
             }
         });
 
@@ -225,11 +225,11 @@ public class AddUserFragment extends Fragment {
                     managerSharedPreferences.set("user", data.toString());
 
                     //Iniciando a transição para a tela home
-                    HomeFragment homeFragment = new HomeFragment();
-                    FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.content_fragment, homeFragment, "home");
-                    fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
-                    fragmentTransaction.commit();
+                    //HomeFragment homeFragment = new HomeFragment();
+                    //FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                    //fragmentTransaction.replace(R.id.content_fragment, homeFragment, "home");
+                    //fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
+                    //fragmentTransaction.commit();
                     Toast.makeText(getContext(), "Cadastrado com Sucesso", Toast.LENGTH_LONG).show();
                 }
             }catch (JSONException e){
