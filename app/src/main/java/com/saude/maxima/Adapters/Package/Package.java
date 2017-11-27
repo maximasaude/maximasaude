@@ -1,10 +1,11 @@
 package com.saude.maxima.Adapters.Package;
 
+
 /**
  * Created by Junnyor on 21/10/2017.
  */
 
-public class Package {
+public class Package{
 
     private int id;
     private String name;

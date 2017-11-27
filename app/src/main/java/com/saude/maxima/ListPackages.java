@@ -16,8 +16,4 @@ public class ListPackages implements Serializable {
     public ListPackages(List<Package> packagesList){
         this.packagesList = packagesList;
     }
-
-    public List<Package> getPackagesList(){
-        return this.packagesList;
-    }
 }

@@ -115,10 +115,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toast.makeText(context, "Postion: "+ position, Toast.LENGTH_SHORT).show();
     }
 
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(ListPackages.key, new ListPackages(packagesList));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     /**
@@ -295,15 +301,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
-
-
     }
 
     private void setShowRecyclerView(){
         packagesAdapter = new PackagesAdapter(context, packagesList);
-        //packagesAdapter.setRecyclerViewOnClickListenerHack(HomeFragment.this);
         recyclerView.setAdapter(packagesAdapter);
         recyclerView.addOnItemTouchListener(new RecyclerViewOnTouchListener(context, recyclerView, MainActivity.this));
+        content.setVisibility(View.VISIBLE);
     }
 
     private void onScrollRecycleView(){
@@ -624,8 +628,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         protected void onPostExecute(JSONObject result) {
             super.onPostExecute(result);
-
-            packagesList = new ArrayList<Package>();
             try{
                 if(!result.has("error")){
                     progressDialog.dismiss();
