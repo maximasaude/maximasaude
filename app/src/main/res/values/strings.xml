@@ -7,6 +7,7 @@
     <string name="settings">Configurações</string>
     <string name="footer">Rodapé</string>
     <string name="logout">Deslogar</string>
+    <string name="you_are_logged">Você está logado</string>
     <string name="close">Fechar</string>
     <string name="terms">Termos de uso</string>
     <string name="help">Ajuda</string>
@@ -17,6 +18,7 @@
     <string name="save">Salvar</string>
     <string name="add">Adicionar</string>
     <string name="notifications">Notificações</string>
+    <string name="no_internet">Não há internet</string>
     <string name="add_newsletter">Inscreva-se na nossa Newsletter</string>
 
     <string-array name="titles_tab_report">

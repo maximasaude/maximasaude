@@ -55,8 +55,8 @@
         <activity
             android:name=".ReportEvaluationShowActivity"
             android:label="@string/title_activity_report_evaluation" />
-        <activity
-            android:name=".PackageShowActivity"/>
+        <activity android:name=".PackageShowActivity" />
+        <activity android:name=".DiaryActivity"></activity>
     </application>
 
 </manifest>

@@ -14,8 +14,10 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,12 +30,14 @@ import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText edtEmail, edtPassword;
+    AutoCompleteTextView edtEmail, edtPassword;
     Button btnLogin;
     TextView txtCreate;
 
     TextView emailUser;
     TextView nameUser;
+
+    LinearLayout content;
 
     ProgressBar progressBar;
 
@@ -46,6 +50,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Bundle bundle = getIntent().getExtras();
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
         finish();
     }
 
@@ -61,7 +69,10 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
+            Toast.makeText(this, R.string.you_are_logged, Toast.LENGTH_LONG).show();
         }
+
+        content = (LinearLayout) findViewById(R.id.content);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -70,8 +81,8 @@ public class LoginActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        edtEmail = (EditText) findViewById(R.id.edtEmail);
-        edtPassword = (EditText) findViewById(R.id.edtPassword);
+        edtEmail = (AutoCompleteTextView) findViewById(R.id.edtEmail);
+        edtPassword = (AutoCompleteTextView) findViewById(R.id.edtPassword);
         btnLogin = (Button) findViewById(R.id.btnLogin);
         txtCreate = (TextView) findViewById(R.id.txtCreate);
         progressBar = (ProgressBar) findViewById(R.id.progress);
@@ -81,6 +92,10 @@ public class LoginActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle arrow click here
         if (item.getItemId() == android.R.id.home) {
+            Bundle bundle = getIntent().getExtras();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
             finish(); // close this activity and return to preview activity (if there is any)
         }
         return super.onOptionsItemSelected(item);
@@ -109,8 +124,12 @@ public class LoginActivity extends AppCompatActivity {
                 params = "username="+email;
                 params += "&password="+password+"&grant_type=password";
                 params += "&client_id=2";
-                params += "&client_secret=GUmSvywQ3uUuWEnD2Uv9enqq3j8jtMjyU59Cb0qT";
+                params += "&client_secret=k92EnVPaxCWupLxQMWeUMEEInIbByhadY34PgvB0";
                 params += "&scope=";
+
+                content.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+
                 new getAccessTokenUser().execute(Routes.takeToken);
             }
         }else{
@@ -132,7 +151,6 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
         }
 
         /**
@@ -161,12 +179,12 @@ public class LoginActivity extends AppCompatActivity {
                     new getUser(tokenType, accessToken, params).execute(Routes.takeUser);
                 }else{
                     Toast.makeText(getApplicationContext(), "Usuário ou Senha inválidos", Toast.LENGTH_LONG).show();
-
-                    progressBar.setVisibility(View.GONE);
                 }
             }catch (JSONException e){
-                progressBar.setVisibility(View.GONE);
+
             }
+            progressBar.setVisibility(View.GONE);
+            content.setVisibility(View.VISIBLE);
         }
 
     }
@@ -215,8 +233,10 @@ public class LoginActivity extends AppCompatActivity {
                     SharedPreferences sharedPreferences = activity.getSharedPreferences("user", Context.MODE_PRIVATE);
                     sharedPreferences.edit().putString("user", data.toString()).commit();
 
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    setResult(RESULT_OK, intent);
+                    Intent intent = new Intent(activity, MainActivity.class);
+                    Bundle bundle = getIntent().getExtras();
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                     finish();
 
                     //Iniciando a transição para a tela home
@@ -227,8 +247,9 @@ public class LoginActivity extends AppCompatActivity {
                     //fragmentTransaction.commit();
                 }
             }catch (JSONException e){
-                progressBar.setVisibility(View.GONE);
+
             }
+            progressBar.setVisibility(View.GONE);
         }
 
 

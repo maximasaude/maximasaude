@@ -1,11 +1,13 @@
 package com.saude.maxima.Adapters.Package;
 
 
+import java.io.Serializable;
+
 /**
  * Created by Junnyor on 21/10/2017.
  */
 
-public class Package{
+public class Package implements Serializable {
 
     private int id;
     private String name;

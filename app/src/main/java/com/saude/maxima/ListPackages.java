@@ -1,5 +1,4 @@
 package com.saude.maxima;
-
 import com.saude.maxima.Adapters.Package.Package;
 
 import java.io.Serializable;

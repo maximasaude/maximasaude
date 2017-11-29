@@ -15,6 +15,13 @@
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"></LinearLayout>-->
 
+    <ProgressBar
+        android:id="@+id/progress"
+        android:visibility="visible"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <FrameLayout
         android:visibility="gone"
         android:id="@+id/content_fragment"
@@ -24,34 +31,40 @@
         android:clickable="true" />
 
     <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/swipe_refresh_layout">
+        android:visibility="gone">
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/content"
                 android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <!-- TODO: Update blank fragment layout -->
                 <ViewFlipper
-                    android:visibility="gone"
                     android:id="@+id/view_fliper"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp">
+                    android:layout_height="100dp"
+                    android:visibility="gone">
+
                     <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
                         android:id="@+id/slide1"
-                        android:src="@drawable/slide1"/>
-                    <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:src="@drawable/slide1" />
+
+                    <ImageView
                         android:id="@+id/slide2"
-                        android:src="@drawable/logo"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/logo" />
                 </ViewFlipper>
 
                 <LinearLayout
@@ -72,8 +85,7 @@
                         android:id="@+id/recycleView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="5dp"
-                        android:scrollbars="vertical" />
+                        android:layout_marginTop="5dp" />
 
                 </LinearLayout>
 
@@ -107,10 +119,10 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="@string/name"
-                                android:textColorHint="@color/mdtp_white"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:singleLine="true" />
+                                android:singleLine="true"
+                                android:textColorHint="@color/mdtp_white" />
 
                         </android.support.design.widget.TextInputLayout>
 
@@ -119,23 +131,22 @@
                             android:layout_height="wrap_content">
 
                             <AutoCompleteTextView
-                                android:focusable="false"
                                 android:id="@+id/edtEmail"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="@string/email"
-                                android:textColorHint="@color/mdtp_white"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:singleLine="true" />
+                                android:singleLine="true"
+                                android:textColorHint="@color/mdtp_white" />
 
                         </android.support.design.widget.TextInputLayout>
 
                         <Button
-                            android:layout_marginRight="5dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="end"
+                            android:layout_marginRight="5dp"
                             android:background="@color/black"
                             android:text="@string/register"
                             android:textColor="@color/mdtp_white" />

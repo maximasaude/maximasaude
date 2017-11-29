@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -63,10 +65,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     String params, url;
     LinearLayout content;
 
-    List<Package> packagesList = new ArrayList<Package>();
+    List<Package> packagesList = new ArrayList<>();
     AutoCompleteTextView edtName;
     AutoCompleteTextView edtEmail;
     ViewFlipper viewFlipper;
+    ProgressBar progress;
 
 
     ProgressDialog progressDialog;
@@ -96,13 +99,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     };
 
     private void refreshContent(){
-        recreate();
+        if(isOnline()) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }else{
+            content.setVisibility(View.GONE);
+            swipeRefreshLayout.setRefreshing(false);
+            progress.setVisibility(View.GONE);
+            Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public void OnClickListener(View view, int position) {
-        progressDialog.show();
-
+        progress.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setVisibility(View.GONE);
         int package_id = packagesList.get(position).getId();
 
         url = Routes.packages[1].replace("{id}", ""+package_id);
@@ -138,6 +150,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +164,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        content = (LinearLayout) findViewById(R.id.content);
+
+        progress = (ProgressBar) findViewById(R.id.progress);
+        progress.setVisibility(View.VISIBLE);
+
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setVisibility(View.GONE);
         swipeRefreshLayout.setRefreshing(false);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
             @Override
@@ -157,148 +179,147 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        viewFlipper = (ViewFlipper) findViewById(R.id.view_fliper);
+        if(isOnline()) {
 
-        viewFlipper.setFlipInterval(3000);
-        viewFlipper.startFlipping();
-        Animation in = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
-        Animation out = AnimationUtils.loadAnimation(context, android.R.anim.slide_out_right);
-        viewFlipper.setInAnimation(in);
-        viewFlipper.setOutAnimation(out);
+            viewFlipper = (ViewFlipper) findViewById(R.id.view_fliper);
 
-
-        //viewFlipper.setOnTouchListener(onSwipeTouchListener);
-        viewFlipper.addOnLayoutChangeListener(onLayoutChangeListenerViewFlipper);
-
-        edtEmail = (AutoCompleteTextView) findViewById(R.id.edtEmail);
-        edtName = (AutoCompleteTextView) findViewById(R.id.edtName);
-
-        edtEmail.clearFocus();
-        edtName.clearFocus();
+            viewFlipper.setFlipInterval(3000);
+            viewFlipper.startFlipping();
+            Animation in = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+            Animation out = AnimationUtils.loadAnimation(context, android.R.anim.slide_out_right);
+            viewFlipper.setInAnimation(in);
+            viewFlipper.setOutAnimation(out);
 
 
-        //Método executado ao tocar no viewflipper
-        //Faz as trocas de imagens
-        viewFlipper.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                viewFlipper.stopFlipping();
-                int action = event.getActionMasked();
+            //viewFlipper.setOnTouchListener(onSwipeTouchListener);
+            viewFlipper.addOnLayoutChangeListener(onLayoutChangeListenerViewFlipper);
 
-                switch (action) {
-                    case MotionEvent.ACTION_DOWN:
-                        startX = event.getX();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        float endX = event.getX();
-                        float endY = event.getY();
+            edtEmail = (AutoCompleteTextView) findViewById(R.id.edtEmail);
+            edtName = (AutoCompleteTextView) findViewById(R.id.edtName);
 
-                        //swipe right
-                        if (startX < endX) {
-                            viewFlipper.showNext();
-                            viewFlipper.startFlipping();
-                        }
-                        //swipe left
-                        if (startX > endX) {
-                            viewFlipper.showPrevious();
-                            viewFlipper.startFlipping();
-                        }
+            edtEmail.clearFocus();
+            edtName.clearFocus();
 
-                        break;
+
+            //Método executado ao tocar no viewflipper
+            //Faz as trocas de imagens
+            viewFlipper.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+                    viewFlipper.stopFlipping();
+                    int action = event.getActionMasked();
+
+                    switch (action) {
+                        case MotionEvent.ACTION_DOWN:
+                            startX = event.getX();
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            float endX = event.getX();
+                            float endY = event.getY();
+
+                            //swipe right
+                            if (startX < endX) {
+                                viewFlipper.showNext();
+                                viewFlipper.startFlipping();
+                            }
+                            //swipe left
+                            if (startX > endX) {
+                                viewFlipper.showPrevious();
+                                viewFlipper.startFlipping();
+                            }
+
+                            break;
+                    }
+                    return true;
                 }
-                return true;
-            }
-        });
-
-        content = (LinearLayout) findViewById(R.id.content);
-        content.setVisibility(View.INVISIBLE);
-
-        recyclerView = (RecyclerView) findViewById(R.id.recycleView);
-        recyclerView.setHasFixedSize(true);
-
-        staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        staggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
-        recyclerView.setLayoutManager(staggeredGridLayoutManager);
-
-        this.onScrollRecycleView();
+            });
 
 
+            recyclerView = (RecyclerView) findViewById(R.id.recycleView);
+            recyclerView.setHasFixedSize(true);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            staggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+            recyclerView.setLayoutManager(staggeredGridLayoutManager);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+            this.onScrollRecycleView();
 
 
-        navHeader = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.nav_header);
-        navContentLogo = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.nav_content_logo);
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-        navigationView.setNavigationItemSelectedListener(this);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
-        sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
-        //sharedPreferences.registerOnSharedPreferenceChangeListener(spChange);
-        if (savedInstanceState != null) {
-            ListPackages lp = (ListPackages) savedInstanceState.getSerializable(ListPackages.key);
-            packagesList = lp.packagesList;
+            navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+
+            navHeader = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.nav_header);
+            navContentLogo = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.nav_content_logo);
+
+            drawer.setDrawerListener(toggle);
+            toggle.syncState();
+            navigationView.setNavigationItemSelectedListener(this);
+
+            sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
+            //sharedPreferences.registerOnSharedPreferenceChangeListener(spChange);
+            if (savedInstanceState != null) {
+                ListPackages lp = (ListPackages) savedInstanceState.getSerializable(ListPackages.key);
+                packagesList = lp.packagesList;
             /*HomeFragment homeFragment = new HomeFragment();
             FragmentTransaction fragmentHomeTransaction = getSupportFragmentManager().beginTransaction();
             fragmentHomeTransaction.add(R.id.content_fragment, homeFragment);
             fragmentHomeTransaction.commit();*/
-        }
-
-        if(packagesList.size() == 0 || packagesList == null){
-            new getPackages(null).execute(Routes.packages[0]);
-        }else{
-            setShowRecyclerView();
-        }
-
-
-
-
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
-        });*/
 
-        name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.name);
-        email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.email);
+            Bundle bundle = getIntent().getExtras();
 
-        //Instancia para a classe auth
-        this.auth = new Auth(getApplicationContext());
+            if(bundle != null){
+                ListPackages lp = (ListPackages) bundle.getSerializable(ListPackages.key);
+                packagesList = lp.packagesList;
+            }
 
-        //Pegando os dados do usuário, caso esteja logado
-        this.user = this.auth.getAuth();
+            if (packagesList.size() == 0 || packagesList == null) {
+                new getPackages(null).execute(Routes.packages[0]);
+            } else {
+                setShowRecyclerView();
+            }
+
+            name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.name);
+            email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.email);
+
+            //Instancia para a classe auth
+            this.auth = new Auth(getApplicationContext());
+
+            //Pegando os dados do usuário, caso esteja logado
+            this.user = this.auth.getAuth();
 
     /*if(sharedPreferences.contains("user")){
         navigationView.getMenu().getItem(1).setVisible(false);
     }*/
 
-        //Setando true para o menu Home
-        navigationView.getMenu().getItem(0).setChecked(true);
-        navigationView.getMenu().findItem(R.id.optionUser).setVisible(false);
+            //Setando true para o menu Home
+            navigationView.getMenu().getItem(0).setChecked(true);
+            navigationView.getMenu().findItem(R.id.optionUser).setVisible(false);
 
-        //Verifico se o usuário está logado
-        if (Auth.isLogged()) {
-            navContentLogo.setVisibility(View.GONE);
-            navHeader.setVisibility(View.VISIBLE);
-            //Setando false para o menu login não ficar visível
-            navigationView.getMenu().getItem(1).setVisible(false);
-            navigationView.getMenu().findItem(R.id.optionUser).setVisible(true);
-            try {
-                name.setText(this.user.get("name").toString());
-                email.setText(this.user.get("email").toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
+            //Verifico se o usuário está logado
+            if (Auth.isLogged()) {
+                navContentLogo.setVisibility(View.GONE);
+                navHeader.setVisibility(View.VISIBLE);
+                //Setando false para o menu login não ficar visível
+                navigationView.getMenu().getItem(1).setVisible(false);
+                navigationView.getMenu().findItem(R.id.optionUser).setVisible(true);
+                try {
+                    name.setText(this.user.get("name").toString());
+                    email.setText(this.user.get("email").toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
+        }else{
+            content.setVisibility(View.GONE);
+            Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.GONE);
         }
 
     }
@@ -307,7 +328,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         packagesAdapter = new PackagesAdapter(context, packagesList);
         recyclerView.setAdapter(packagesAdapter);
         recyclerView.addOnItemTouchListener(new RecyclerViewOnTouchListener(context, recyclerView, MainActivity.this));
+        swipeRefreshLayout.setVisibility(View.VISIBLE);
         content.setVisibility(View.VISIBLE);
+        progress.setVisibility(View.GONE);
     }
 
     private void onScrollRecycleView(){
@@ -405,11 +428,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_close) {
             finish();
-            System.exit(0);
         }else if(id == R.id.action_logout){
             ManagerSharedPreferences managerSharedPreferences = new ManagerSharedPreferences(this);
             managerSharedPreferences.remove("user");
-            recreate();
+            Bundle bundle = getIntent().getExtras();
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -421,23 +447,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            HomeFragment homeFragment = new HomeFragment();
-            FragmentTransaction fragmentTransaction = fm.beginTransaction();
-            fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
-            fragmentTransaction.replace(R.id.content_fragment, homeFragment, "home").commit();
-
+            refreshContent();
         }else if (id == R.id.nav_login) {
             //LoginFragment loginFragment = new LoginFragment();
             //FragmentTransaction fragmentTransaction = fm.beginTransaction();
             //fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
             //fragmentTransaction.replace(R.id.content_fragment, loginFragment, "login").commit();
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivityForResult(intent, 2);
+            Intent intent = new Intent(this, LoginActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(ListPackages.key, new ListPackages(packagesList));
+            intent.putExtras(bundle);
+            startActivity(intent);
+            finish();
         }else if (id == R.id.nav_cart) {
-            DiaryFragment diaryFragment = new DiaryFragment();
-            FragmentTransaction fragmentTransaction = fm.beginTransaction();
-            fragmentTransaction.addToBackStack(getString(R.string.addToBackStack));
-            fragmentTransaction.replace(R.id.content_fragment, diaryFragment, "diary").commit();
+            Intent intent = new Intent(this, DiaryActivity.class);
+            startActivity(intent);
         }else if (id == R.id.nav_report) {
             Intent intent = new Intent(this, ReportActivity.class);
             startActivity(intent);
@@ -455,9 +479,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == 2) {
-            recreate();
-        }
     }
 
     @Override
@@ -485,10 +506,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         private JSONArray packages;
 
         private getPackages(String params){
-            progressDialog = new ProgressDialog(activity);
-            progressDialog.setMessage(getString(R.string.executing));
-            progressDialog.setCancelable(false);
-            progressDialog.show();
             this.setParams(params);
         }
 
@@ -506,7 +523,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         protected void onPostExecute(JSONObject result) {
             super.onPostExecute(result);
-
+            packagesList.clear();
             try{
                 if(!result.has("error")){
                     JSONArray arrPackage = result.getJSONArray("success");
@@ -522,19 +539,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
 
                     //Toast.makeText(getContext(), result.getJSONObject("success").toString(), Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
-
                 }
             }catch (JSONException e){
-                progressDialog.dismiss();
+
             }
-            progressDialog.dismiss();
+
+
             packagesAdapter = new PackagesAdapter(context, packagesList);
-            //packagesAdapter.setRecyclerViewOnClickListenerHack(HomeFragment.this);
             recyclerView.setAdapter(packagesAdapter);
             recyclerView.addOnItemTouchListener(new RecyclerViewOnTouchListener(context, recyclerView, MainActivity.this));
-            //gridView.setAdapter(packagesAdapter);
+
+            //packagesAdapter.setRecyclerViewOnClickListenerHack(HomeFragment.this);
+
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(false);
             content.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.GONE);
         }
 
 
@@ -630,7 +650,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onPostExecute(result);
             try{
                 if(!result.has("error")){
-                    progressDialog.dismiss();
                     JSONObject objPackage = result.getJSONObject("success");
 
                     Bundle args = new Bundle();
@@ -646,9 +665,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 }
             }catch (JSONException e){
-                progressDialog.dismiss();
             }
-            progressDialog.dismiss();
+            progress.setVisibility(View.GONE);
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(false);
+            content.setVisibility(View.VISIBLE);
         }
 
 
