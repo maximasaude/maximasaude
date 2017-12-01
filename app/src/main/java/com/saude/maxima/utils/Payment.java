@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.webkit.JavascriptInterface;
 
-import com.saude.maxima.DashboardActivity;
-import com.saude.maxima.MainActivity;
 import com.saude.maxima.PaymentConclusionActivity;
 
 import org.json.JSONObject;

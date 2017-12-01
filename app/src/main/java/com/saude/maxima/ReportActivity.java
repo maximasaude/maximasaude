@@ -1,13 +1,17 @@
 package com.saude.maxima;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,7 +38,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReportActivity extends AppCompatActivity implements RecyclerViewOnClickListenerHack {
+public class ReportActivity extends BaseActivity implements RecyclerViewOnClickListenerHack, NavigationView.OnNavigationItemSelectedListener{
 
     RecyclerView recyclerView;
     TabLayout tabLayout;
@@ -47,26 +51,51 @@ public class ReportActivity extends AppCompatActivity implements RecyclerViewOnC
     ProgressBar progressBar;
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
-        if (item.getItemId() == android.R.id.home) {
-            finish(); // close this activity and return to preview activity (if there is any)
+    public void onPause(){
+        super.onPause();
+        finish();
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_home) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }else if (id == R.id.nav_login) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }else if (id == R.id.nav_cart) {
+            Intent intent = new Intent(this, DiaryActivity.class);
+            startActivity(intent);
+            finish();
+        }else if (id == R.id.nav_report) {
+            Intent intent = new Intent(this, ReportActivity.class);
+            startActivity(intent);
+            finish();
+        }else if (id == R.id.nav_perfil) {
+            Intent intent = new Intent(this, EditUserActivity.class);
+            startActivity(intent);
+            finish();
         }
-        return super.onOptionsItemSelected(item);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_report);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        getLayoutInflater().inflate(R.layout.activity_report, frameLayout);
+        getSupportActionBar().setTitle(R.string.report);
+        navigationView.setNavigationItemSelectedListener(this);
 
-        // add back arrow to toolbar
-        if (getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
 
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
@@ -327,6 +356,13 @@ public class ReportActivity extends AppCompatActivity implements RecyclerViewOnC
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
 
         }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        clearChecked();
+        navigationView.getMenu().findItem(R.id.nav_report).setChecked(true);
     }
 
     @Override

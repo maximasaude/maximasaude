@@ -29,7 +29,6 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -421,7 +420,7 @@ public class CreateUserActivity extends AppCompatActivity implements LoaderCallb
                     //Adicionando os dados do usuário
                     managerSharedPreferences.set("user", data.toString());
 
-                    Intent intent = new Intent(context, MainActivity.class);
+                    Intent intent = new Intent(context, MainActivityOld.class);
                     startActivity(intent);
                     finish();
 

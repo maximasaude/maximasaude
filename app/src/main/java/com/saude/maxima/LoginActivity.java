@@ -1,14 +1,12 @@
 package com.saude.maxima;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -16,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,7 +25,7 @@ import com.saude.maxima.utils.Routes;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     AutoCompleteTextView edtEmail, edtPassword;
     Button btnLogin;
@@ -50,17 +47,30 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Bundle bundle = getIntent().getExtras();
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtras(bundle);
-        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        clearChecked();
+        navigationView.getMenu().findItem(R.id.nav_login).setChecked(true);
+
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
         finish();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        getLayoutInflater().inflate(R.layout.activity_login, frameLayout);
+        getSupportActionBar().setTitle(R.string.title_activity_login);
+
+        navigationView.getMenu().getItem(1).setChecked(true);
 
         activity = this;
 
@@ -74,31 +84,11 @@ public class LoginActivity extends AppCompatActivity {
 
         content = (LinearLayout) findViewById(R.id.content);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        // add back arrow to toolbar
-        if (getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
         edtEmail = (AutoCompleteTextView) findViewById(R.id.edtEmail);
         edtPassword = (AutoCompleteTextView) findViewById(R.id.edtPassword);
         btnLogin = (Button) findViewById(R.id.btnLogin);
         txtCreate = (TextView) findViewById(R.id.txtCreate);
         progressBar = (ProgressBar) findViewById(R.id.progress);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
-        if (item.getItemId() == android.R.id.home) {
-            Bundle bundle = getIntent().getExtras();
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtras(bundle);
-            startActivity(intent);
-            finish(); // close this activity and return to preview activity (if there is any)
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -234,8 +224,6 @@ public class LoginActivity extends AppCompatActivity {
                     sharedPreferences.edit().putString("user", data.toString()).commit();
 
                     Intent intent = new Intent(activity, MainActivity.class);
-                    Bundle bundle = getIntent().getExtras();
-                    intent.putExtras(bundle);
                     startActivity(intent);
                     finish();
 

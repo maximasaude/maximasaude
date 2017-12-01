@@ -9,7 +9,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -43,10 +46,10 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DiaryActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, DialogInterface.OnCancelListener {
+public class DiaryActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, DialogInterface.OnCancelListener {
 
     private ManagerSharedPreferences managerSharedPreferences;
-    private Context context;
+
     TextView txtPackage;
     TextView txtValue;
     TextView txtDate;
@@ -67,11 +70,9 @@ public class DiaryActivity extends AppCompatActivity implements DatePickerDialog
     ProgressBar progressBar;
 
     View view;
-    Activity activity;
 
     SwipeRefreshLayout swipeRefreshLayout;
 
-    Toolbar toolbar;
     String params = null;
 
     @Override
@@ -85,31 +86,59 @@ public class DiaryActivity extends AppCompatActivity implements DatePickerDialog
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
-        if (item.getItemId() == android.R.id.home) {
-            finish(); // close this activity and return to preview activity (if there is any)
+    public void onPause(){
+        super.onPause();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_home) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }else if (id == R.id.nav_login) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }else if (id == R.id.nav_cart) {
+            Intent intent = new Intent(this, DiaryActivity.class);
+            startActivity(intent);
+            finish();
+        }else if (id == R.id.nav_report) {
+            Intent intent = new Intent(this, ReportActivity.class);
+            startActivity(intent);
+            finish();
+        }else if (id == R.id.nav_perfil) {
+            Intent intent = new Intent(this, EditUserActivity.class);
+            startActivity(intent);
+            finish();
         }
-        return super.onOptionsItemSelected(item);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_diary);
-        this.context = getApplicationContext();
-        this.activity = this;
+
+        getLayoutInflater().inflate(R.layout.activity_diary, frameLayout);
+        getSupportActionBar().setTitle(R.string.cart);
+        navigationView.setNavigationItemSelectedListener(this);
 
         progressBar = (ProgressBar) findViewById(R.id.progress);
         progressBar.setVisibility(View.VISIBLE);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        // add back arrow to toolbar
-        if (getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setRefreshing(false);
@@ -234,6 +263,8 @@ public class DiaryActivity extends AppCompatActivity implements DatePickerDialog
     public void onResume(){
         super.onResume();
         progressBar.setVisibility(View.GONE);
+        clearChecked();
+        navigationView.getMenu().findItem(R.id.nav_cart).setChecked(true);
     }
 
     public void remove(View view){

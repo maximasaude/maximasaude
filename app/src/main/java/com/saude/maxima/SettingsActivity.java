@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import com.saude.maxima.utils.ManagerSharedPreferences;
 
@@ -25,7 +24,7 @@ public class SettingsActivity extends AppCompatActivity {
      */
     public void logout(View view){
         managerSharedPreferences.remove("user");
-        Intent main = new Intent(this, MainActivity.class);
+        Intent main = new Intent(this, MainActivityOld.class);
         startActivity(main);
         finish();
     }
