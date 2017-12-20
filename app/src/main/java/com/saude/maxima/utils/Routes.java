@@ -1,6 +1,5 @@
 package com.saude.maxima.utils;
 
-import org.json.JSONObject;
 
 /**
  * Created by Junnyor on 16/10/2017.
@@ -43,6 +42,11 @@ public class Routes extends Config{
     public static final String[] evaluations = {
             getProtocol()+getHost()+getPort()+"/api/evaluations",
             getProtocol()+getHost()+getPort()+"/api/evaluations/get_evaluations_user/{id}",
+    };
+
+    public static final String[] categories = {
+            getProtocol()+getHost()+getPort()+"/api/categories",
+            getProtocol()+getHost()+getPort()+"/api/categories/{id}",
     };
 
 }

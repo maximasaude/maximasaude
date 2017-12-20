@@ -114,7 +114,7 @@ public class LoginActivity extends BaseActivity {
                 params = "username="+email;
                 params += "&password="+password+"&grant_type=password";
                 params += "&client_id=2";
-                params += "&client_secret=k92EnVPaxCWupLxQMWeUMEEInIbByhadY34PgvB0";
+                params += "&client_secret=TkFESksxjjJq5NQTrPI3ob3rd8NQnqIgPEtLYeAu";
                 params += "&scope=";
 
                 content.setVisibility(View.GONE);

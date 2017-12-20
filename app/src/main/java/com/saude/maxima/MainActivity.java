@@ -11,8 +11,11 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -33,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.saude.maxima.Adapters.Package.Category;
 import com.saude.maxima.Adapters.Package.Package;
 import com.saude.maxima.Adapters.Package.PackagesAdapter;
 import com.saude.maxima.interfaces.RecyclerViewOnClickListenerHack;
@@ -60,10 +64,13 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
     LinearLayout content;
 
     List<Package> packagesList = new ArrayList<>();
+    List<Category> categoryList = new ArrayList<>();
     AutoCompleteTextView edtName;
     AutoCompleteTextView edtEmail;
     ViewFlipper viewFlipper;
     ProgressBar progress;
+
+    ViewPager viewPager;
 
 
     ProgressDialog progressDialog;
@@ -211,6 +218,18 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
             //viewFlipper.setOnTouchListener(onSwipeTouchListener);
             viewFlipper.addOnLayoutChangeListener(onLayoutChangeListenerViewFlipper);
 
+            viewPager = (ViewPager) findViewById(R.id.view_pager);
+
+            new MainActivity.getCategories(null).execute(Routes.categories[0]);
+
+            /*viewPager.setAdapter(
+                    new CategoryFragmentStatePagerAdapter(
+                            getSupportFragmentManager(),
+                            getResources().getStringArray(R.array.titles_tab_report)
+                    )
+            );*/
+
+
             edtEmail = (AutoCompleteTextView) findViewById(R.id.edtEmail);
             edtName = (AutoCompleteTextView) findViewById(R.id.edtName);
 
@@ -300,6 +319,33 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
         progress.setVisibility(View.GONE);
     }
 
+    private class CategoryFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
+
+        private String[] tabTitles;
+        private List<Category> categoryList;
+
+        private CategoryFragmentStatePagerAdapter(FragmentManager fm, List<Category> categoryList) {
+            super(fm);
+            this.categoryList = categoryList;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Bundle args = new Bundle();
+            Category category = this.categoryList.get(position);
+            return null;
+        }
+
+        @Override
+        public int getCount() {
+            return this.categoryList.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return this.tabTitles[position];
+        }
+    }
 
 
     private void onScrollRecycleView(){
@@ -570,6 +616,63 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
             this.params = params;
         }
 
+    }
+
+    public class getCategories extends AsyncTask<String, Void, JSONObject> {
+
+        String params;
+
+        private getCategories(String params){
+            this.setParams(params);
+        }
+
+        /**
+         * Defines work to perform on the background thread.
+         */
+        @Override
+        protected JSONObject doInBackground(String... urls) {
+            return Connection.get(urls[0], this.getParams());
+        }
+
+        /**
+         * Updates the DownloadCallback with the result.
+         */
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            super.onPostExecute(result);
+            try{
+                if(!result.has("error")){
+                    JSONArray arrCategory = result.getJSONArray("success");
+                    for(int i = 0; i < arrCategory.length(); i++){
+                        try{
+                            JSONObject objCategory = arrCategory.getJSONObject(i);
+                            categoryList.add(new Category(objCategory));
+                            //packages.add(new Package(2, "Completo", "Pacote completo", 50.00));
+                        }catch (JSONException ex){
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }catch (JSONException e){
+
+            }
+        }
+
+
+        /**
+         * Override to add special behavior for cancelled AsyncTask.
+         */
+        @Override
+        protected void onCancelled(JSONObject result) {
+        }
+
+        private String getParams() {
+            return params;
+        }
+
+        private void setParams(String params) {
+            this.params = params;
+        }
     }
 
 }
