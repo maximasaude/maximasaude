@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -27,21 +28,16 @@ import android.view.GestureDetector;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.saude.maxima.Adapters.Package.Category;
+import com.saude.maxima.Adapters.Category.Category;
 import com.saude.maxima.Adapters.Package.Package;
 import com.saude.maxima.Adapters.Package.PackagesAdapter;
 import com.saude.maxima.interfaces.RecyclerViewOnClickListenerHack;
-import com.saude.maxima.utils.Auth;
-import com.saude.maxima.utils.ManagerSharedPreferences;
 import com.saude.maxima.utils.Routes;
 
 import org.json.JSONArray;
@@ -71,6 +67,7 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
     ProgressBar progress;
 
     ViewPager viewPager;
+    TabLayout tabLayout;
 
 
     ProgressDialog progressDialog;
@@ -126,17 +123,12 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
             startActivity(intent);
             finish();
         }else{
-            content.setVisibility(View.GONE);
-            swipeRefreshLayout.setRefreshing(false);
-            progress.setVisibility(View.GONE);
             Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
     public void OnClickListener(View view, int position) {
-        progress.setVisibility(View.VISIBLE);
-        swipeRefreshLayout.setVisibility(View.GONE);
         int package_id = packagesList.get(position).getId();
 
         url = Routes.packages[1].replace("{id}", ""+package_id);
@@ -153,7 +145,7 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(ListPackages.key, new ListPackages(packagesList));
+        //outState.putSerializable(ListPackages.key, new ListPackages(packagesList));
     }
 
     @Override
@@ -187,91 +179,14 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
 
         navigationView.setNavigationItemSelectedListener(this);
 
-
-        content = (LinearLayout) findViewById(R.id.content);
-
-        progress = (ProgressBar) findViewById(R.id.progress);
-        progress.setVisibility(View.VISIBLE);
-
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setVisibility(View.GONE);
-        swipeRefreshLayout.setRefreshing(false);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
-            @Override
-            public void onRefresh() {
-                refreshContent();
-            }
-        });
-
         if(isOnline()) {
 
-            viewFlipper = (ViewFlipper) findViewById(R.id.view_fliper);
-
-            viewFlipper.setFlipInterval(3000);
-            viewFlipper.startFlipping();
-            Animation in = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
-            Animation out = AnimationUtils.loadAnimation(context, android.R.anim.slide_out_right);
-            viewFlipper.setInAnimation(in);
-            viewFlipper.setOutAnimation(out);
-
-
-            //viewFlipper.setOnTouchListener(onSwipeTouchListener);
-            viewFlipper.addOnLayoutChangeListener(onLayoutChangeListenerViewFlipper);
-
+            tabLayout = (TabLayout) findViewById(R.id.tab_layout);
             viewPager = (ViewPager) findViewById(R.id.view_pager);
-
+            tabLayout.setupWithViewPager(viewPager);
             new MainActivity.getCategories(null).execute(Routes.categories[0]);
 
-            /*viewPager.setAdapter(
-                    new CategoryFragmentStatePagerAdapter(
-                            getSupportFragmentManager(),
-                            getResources().getStringArray(R.array.titles_tab_report)
-                    )
-            );*/
-
-
-            edtEmail = (AutoCompleteTextView) findViewById(R.id.edtEmail);
-            edtName = (AutoCompleteTextView) findViewById(R.id.edtName);
-
-            edtEmail.clearFocus();
-            edtName.clearFocus();
-
-
-            //Método executado ao tocar no viewflipper
-            //Faz as trocas de imagens
-            viewFlipper.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent event) {
-                    viewFlipper.stopFlipping();
-                    int action = event.getActionMasked();
-
-                    switch (action) {
-                        case MotionEvent.ACTION_DOWN:
-                            startX = event.getX();
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            float endX = event.getX();
-                            float endY = event.getY();
-
-                            //swipe right
-                            if (startX < endX) {
-                                viewFlipper.showNext();
-                                viewFlipper.startFlipping();
-                            }
-                            //swipe left
-                            if (startX > endX) {
-                                viewFlipper.showPrevious();
-                                viewFlipper.startFlipping();
-                            }
-
-                            break;
-                    }
-                    return true;
-                }
-            });
-
-
-            recyclerView = (RecyclerView) findViewById(R.id.recycleView);
+            /*recyclerView = (RecyclerView) findViewById(R.id.recycleView);
             recyclerView.setHasFixedSize(true);
 
             staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
@@ -298,14 +213,11 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
                 new MainActivity.getPackages(null).execute(Routes.packages[0]);
             } else {
                 setShowRecyclerView();
-            }
+            }*/
 
 
         }else{
-            content.setVisibility(View.GONE);
             Toast.makeText(this, R.string.no_internet, Toast.LENGTH_LONG).show();
-            swipeRefreshLayout.setVisibility(View.VISIBLE);
-            progress.setVisibility(View.GONE);
         }
 
     }
@@ -314,9 +226,6 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
         packagesAdapter = new PackagesAdapter(context, packagesList);
         recyclerView.setAdapter(packagesAdapter);
         recyclerView.addOnItemTouchListener(new MainActivity.RecyclerViewOnTouchListener(context, recyclerView, MainActivity.this));
-        swipeRefreshLayout.setVisibility(View.VISIBLE);
-        content.setVisibility(View.VISIBLE);
-        progress.setVisibility(View.GONE);
     }
 
     private class CategoryFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
@@ -332,8 +241,12 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
         @Override
         public Fragment getItem(int position) {
             Bundle args = new Bundle();
+            args.putInt("keySequence", position);
             Category category = this.categoryList.get(position);
-            return null;
+            args.putSerializable(Category.key+""+position, category);
+            CategoryFragment categoryFragment = new CategoryFragment();
+            categoryFragment.setArguments(args);
+            return categoryFragment;
         }
 
         @Override
@@ -343,7 +256,7 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return this.tabTitles[position];
+            return this.categoryList.get(position).getName();
         }
     }
 
@@ -479,10 +392,6 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
 
             //packagesAdapter.setRecyclerViewOnClickListenerHack(HomeFragment.this);
 
-            swipeRefreshLayout.setVisibility(View.VISIBLE);
-            swipeRefreshLayout.setRefreshing(false);
-            content.setVisibility(View.VISIBLE);
-            progress.setVisibility(View.GONE);
         }
 
 
@@ -594,10 +503,6 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
                 }
             }catch (JSONException e){
             }
-            progress.setVisibility(View.GONE);
-            swipeRefreshLayout.setVisibility(View.VISIBLE);
-            swipeRefreshLayout.setRefreshing(false);
-            content.setVisibility(View.VISIBLE);
         }
 
 
@@ -646,7 +551,27 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
                     for(int i = 0; i < arrCategory.length(); i++){
                         try{
                             JSONObject objCategory = arrCategory.getJSONObject(i);
-                            categoryList.add(new Category(objCategory));
+                            JSONArray arrPackages = objCategory.getJSONArray("packages");
+
+                            List<Package> allPackages = new ArrayList<>();
+                            for(int j = 0; j < arrPackages.length(); j++){
+                                allPackages.add(
+                                        new Package(
+                                                arrPackages.getJSONObject(j).getInt("id"),
+                                                arrPackages.getJSONObject(j).getString("name"),
+                                                arrPackages.getJSONObject(j).getString("description"),
+                                                arrPackages.getJSONObject(j).getDouble("value")
+                                        )
+                                );
+                            }
+
+                            categoryList.add(
+                                    new Category(
+                                            objCategory.getString("name"),
+                                            objCategory.getString("slug"),
+                                            allPackages
+                                    )
+                            );
                             //packages.add(new Package(2, "Completo", "Pacote completo", 50.00));
                         }catch (JSONException ex){
                             ex.printStackTrace();
@@ -656,6 +581,12 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
             }catch (JSONException e){
 
             }
+            viewPager.setAdapter(
+                    new CategoryFragmentStatePagerAdapter(
+                            getSupportFragmentManager(),
+                            categoryList
+                    )
+            );
         }
 
 

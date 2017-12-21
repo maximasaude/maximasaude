@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.saude.maxima.Adapters.Package.Package;
 import com.saude.maxima.R;
 
 import org.json.JSONException;
@@ -21,6 +22,7 @@ public class PackageDescriptionFragment extends Fragment {
 
     JSONObject data_package;
     TextView name, description;
+    Package package_obj;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -28,15 +30,12 @@ public class PackageDescriptionFragment extends Fragment {
 
         Bundle args = getArguments();
 
+        package_obj = (Package) args.getSerializable("package");
+
         description = (TextView) view.findViewById(R.id.description);
         if (args != null) {
-            try{
-                data_package = new JSONObject(args.getString("package"));
+            description.setText(package_obj.getDescription());
 
-                description.setText(data_package.getString("description"));
-            }catch (JSONException e){
-                e.printStackTrace();
-            }
             //Toast.makeText(getContext(), args.toString(), Toast.LENGTH_LONG).show();
         }
 

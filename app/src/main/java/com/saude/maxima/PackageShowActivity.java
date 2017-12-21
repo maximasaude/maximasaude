@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.saude.maxima.Adapters.Package.Package;
 import com.saude.maxima.fragments.packages.PackageContentFragment;
 import com.saude.maxima.fragments.packages.PackageDescriptionFragment;
 import com.saude.maxima.utils.Diary;
@@ -57,6 +58,7 @@ public class PackageShowActivity extends AppCompatActivity implements DatePicker
     Activity activity;
     private JSONObject jsonPackage;
     FragmentManager fm;
+    Package package_obj;
 
     TextView name, description;
     Toolbar toolbar;
@@ -101,12 +103,13 @@ public class PackageShowActivity extends AppCompatActivity implements DatePicker
         this.context = this.getApplicationContext();
 
         args = getIntent().getExtras();
+        package_obj = (Package) args.getSerializable("package_obj");
 
         viewPager.setAdapter(
                 new PackageFragmentStatePagerAdapter(
                         fm,
                         getResources().getStringArray(R.array.titles_tab),
-                        args.getString("package")
+                        package_obj
                 )
         );
 
@@ -239,9 +242,9 @@ public class PackageShowActivity extends AppCompatActivity implements DatePicker
     private class PackageFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
 
         private String[] tabTitles;
-        private String dataPackage;
+        private Package dataPackage;
 
-        private PackageFragmentStatePagerAdapter(FragmentManager fm, String[] tabTitles, String dataPackage) {
+        private PackageFragmentStatePagerAdapter(FragmentManager fm, String[] tabTitles, Package dataPackage) {
             super(fm);
             this.tabTitles = tabTitles;
             this.dataPackage = dataPackage;
@@ -253,14 +256,14 @@ public class PackageShowActivity extends AppCompatActivity implements DatePicker
             switch (position){
                 case 0:
                     PackageContentFragment packageContentFragment = new PackageContentFragment();
-                    args.putString("package", this.dataPackage);
+                    args.putSerializable("package", this.dataPackage);
 
                     packageContentFragment.setArguments(args);
                     return packageContentFragment;
                 case 1:
                     PackageDescriptionFragment packageDescriptionFragment = new PackageDescriptionFragment();
 
-                    args.putString("package", this.dataPackage);
+                    args.putSerializable("package", this.dataPackage);
 
                     packageDescriptionFragment.setArguments(args);
                     return packageDescriptionFragment;
