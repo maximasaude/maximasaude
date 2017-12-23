@@ -30,15 +30,18 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.saude.maxima.Adapters.Spinner.SupplierAdapter;
 import com.saude.maxima.utils.ManagerSharedPreferences;
 import com.saude.maxima.utils.Routes;
 
@@ -89,6 +92,7 @@ public class CreateUserActivity extends AppCompatActivity implements LoaderCallb
     Activity activity;
 
     Toolbar toolbar;
+    Spinner spinner;
 
 
     ProgressDialog progressDialog;
@@ -97,6 +101,9 @@ public class CreateUserActivity extends AppCompatActivity implements LoaderCallb
     String params = "";
 
     ManagerSharedPreferences managerSharedPreferences;
+
+    private String[] nomes = {"teste 1", "teste 2"};
+    private int[] imgs = {R.drawable.ic_menu_camera, R.drawable.ic_menu_gallery};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +128,25 @@ public class CreateUserActivity extends AppCompatActivity implements LoaderCallb
         radioGroup = (RadioGroup) findViewById(R.id.radGender);
         btnRegister = (Button) findViewById(R.id.btnRegister);
         gender = (RadioButton) findViewById(radioGroup.getCheckedRadioButtonId());
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, nomes);
+        adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        spinner = (Spinner) findViewById(R.id.spinner);
+
+        spinner.setAdapter(new SupplierAdapter(this, nomes));
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(getApplicationContext(), ""+i, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);

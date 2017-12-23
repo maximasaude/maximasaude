@@ -7,8 +7,8 @@ package com.saude.maxima.utils;
 public class Config {
 
     private static final String protocol = "http://";
-    private static final String host = "pi.mirandafitness.com.br";
-    private static final String port = ":80";
+    private static final String host = "10.0.0.102";
+    private static final String port = ":8000";
 
     public static String getHost(){
         return host;

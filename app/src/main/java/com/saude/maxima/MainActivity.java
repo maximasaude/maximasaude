@@ -184,6 +184,7 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
             tabLayout = (TabLayout) findViewById(R.id.tab_layout);
             viewPager = (ViewPager) findViewById(R.id.view_pager);
             tabLayout.setupWithViewPager(viewPager);
+            tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
             new MainActivity.getCategories(null).execute(Routes.categories[0]);
 
             /*recyclerView = (RecyclerView) findViewById(R.id.recycleView);
