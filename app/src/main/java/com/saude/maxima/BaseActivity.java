@@ -25,9 +25,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by junnyor on 11/29/17.
+ *
  */
-
 public class BaseActivity extends AppCompatActivity{
 
     /**
@@ -36,39 +35,27 @@ public class BaseActivity extends AppCompatActivity{
      *  */
     protected FrameLayout frameLayout;
 
-    Activity activity;
-    Context context;
-    NavigationView navigationView = null;
-    Toolbar toolbar = null;
-    LinearLayout navHeader;
-    LinearLayout navContentLogo;
-    private Auth auth;
-    private JSONObject user;
+    protected Activity activity;
+    protected Context context;
+    protected NavigationView navigationView = null;
+    protected LinearLayout navHeader;
+    protected LinearLayout navContentLogo;
+    protected Auth auth;
+    protected JSONObject user;
 
     TextView name;
     TextView email;
+    DrawerLayout drawer;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+    protected void setActionBarDrawerToggle(Toolbar toolbar){
+
         setSupportActionBar(toolbar);
-
-        context = getApplicationContext();
-        activity = this;
-
-        //Drawer layout
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
-
-        frameLayout = (FrameLayout)findViewById(R.id.content_frame);
 
         navHeader = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.nav_header);
         navContentLogo = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.nav_content_logo);
@@ -101,6 +88,21 @@ public class BaseActivity extends AppCompatActivity{
             }
         }
 
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        context = getApplicationContext();
+        activity = this;
+
+        //Layout pai
+        frameLayout = (FrameLayout)findViewById(R.id.content_frame);
+
+        //Drawer layout
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     }
 
     protected void clearChecked(){

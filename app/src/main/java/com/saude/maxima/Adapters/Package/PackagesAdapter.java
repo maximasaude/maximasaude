@@ -38,8 +38,7 @@ public class PackagesAdapter extends RecyclerView.Adapter<PackagesAdapter.Packag
     @Override
     public PackagesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = this.layoutInflater.inflate(R.layout.grid_view_home, parent, false);
-        PackagesViewHolder packagesViewHolder = new PackagesViewHolder(view);
-        return packagesViewHolder;
+        return new PackagesViewHolder(view);
     }
 
     @Override
@@ -87,7 +86,7 @@ public class PackagesAdapter extends RecyclerView.Adapter<PackagesAdapter.Packag
         @Override
         public void onClick(View view) {
             if(recyclerViewOnClickListenerHack != null){
-                recyclerViewOnClickListenerHack.OnClickListener(view, getPosition());
+                recyclerViewOnClickListenerHack.OnClickListener(view, getLayoutPosition());
             }
         }
     }

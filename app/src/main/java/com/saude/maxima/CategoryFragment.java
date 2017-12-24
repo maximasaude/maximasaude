@@ -1,6 +1,7 @@
 package com.saude.maxima;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -46,6 +47,7 @@ public class CategoryFragment extends Fragment implements RecyclerViewOnClickLis
     List<Package> packagesList = new ArrayList<>();
     Context context;
     String url;
+    Activity activity;
 
     public CategoryFragment() {
         // Required empty public constructor
@@ -79,7 +81,10 @@ public class CategoryFragment extends Fragment implements RecyclerViewOnClickLis
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         context = getActivity().getApplicationContext();
+        activity = getActivity();
+
         Bundle bundle = getArguments();
         this.keySequence = bundle.getInt("keySequence");
 
@@ -99,13 +104,14 @@ public class CategoryFragment extends Fragment implements RecyclerViewOnClickLis
             recyclerView.setLayoutManager(staggeredGridLayoutManager);
             this.onScrollRecycleView();
 
-
             packagesAdapter = new PackagesAdapter(context, packagesList);
+            packagesAdapter.setRecyclerViewOnClickListenerHack(CategoryFragment.this);
             recyclerView.setAdapter(packagesAdapter);
-            recyclerView.addOnItemTouchListener(new CategoryFragment.RecyclerViewOnTouchListener(context, recyclerView, CategoryFragment.this));
+            //recyclerView.addOnItemTouchListener(new CategoryFragment.RecyclerViewOnTouchListener(context, recyclerView, CategoryFragment.this));
 
+        }else{
+            Toast.makeText(activity, R.string.no_internet, Toast.LENGTH_LONG).show();
         }
-
 
         // Inflate the layout for this fragment
         return view;
@@ -210,6 +216,7 @@ public class CategoryFragment extends Fragment implements RecyclerViewOnClickLis
             this.context = context;
             this.recyclerViewOnClickListenerHack = rvoclh;
             gestureDetector = new GestureDetector(this.context, new GestureDetector.SimpleOnGestureListener(){
+
                 @Override
                 public boolean onSingleTapUp(MotionEvent e) {
                     View cv = rv.findChildViewUnder(e.getX(), e.getY());

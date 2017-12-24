@@ -23,6 +23,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
@@ -51,13 +53,10 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
 
     private float startX;
     private float lastX;
-    Activity activity;
-    Context context;
     PackagesAdapter packagesAdapter;
     RecyclerView recyclerView;
     SwipeRefreshLayout swipeRefreshLayout;
     String params, url;
-    LinearLayout content;
 
     List<Package> packagesList = new ArrayList<>();
     List<Category> categoryList = new ArrayList<>();
@@ -68,7 +67,8 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
 
     ViewPager viewPager;
     TabLayout tabLayout;
-
+    RelativeLayout content;
+    Toolbar toolbar;
 
     ProgressDialog progressDialog;
 
@@ -146,6 +146,7 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         //outState.putSerializable(ListPackages.key, new ListPackages(packagesList));
+        outState.putSerializable(ListCategory.key, new ListCategory(categoryList));
     }
 
     @Override
@@ -172,10 +173,24 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.context = getApplicationContext();
-        this.activity = this;
+
+        //Layout filho
         getLayoutInflater().inflate(R.layout.content_main, frameLayout);
-        getSupportActionBar().setTitle(R.string.app_name);
+
+        progress = (ProgressBar) findViewById(R.id.progress);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.app_name);
+        setActionBarDrawerToggle(toolbar);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshContent();
+            }
+        });
 
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -185,7 +200,8 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
             viewPager = (ViewPager) findViewById(R.id.view_pager);
             tabLayout.setupWithViewPager(viewPager);
             tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-            new MainActivity.getCategories(null).execute(Routes.categories[0]);
+            tabLayout.setHorizontalScrollBarEnabled(true);
+
 
             /*recyclerView = (RecyclerView) findViewById(R.id.recycleView);
             recyclerView.setHasFixedSize(true);
@@ -196,25 +212,30 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
 
             this.onScrollRecycleView();
 
-            sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);
+            sharedPreferences = getSharedPreferences("user", Context.MODE_PRIVATE);*/
+
             //sharedPreferences.registerOnSharedPreferenceChangeListener(spChange);
             if (savedInstanceState != null) {
-                ListPackages lp = (ListPackages) savedInstanceState.getSerializable(ListPackages.key);
-                packagesList = lp.packagesList;
+                ListCategory lc = (ListCategory) savedInstanceState.getSerializable(ListCategory.key);
+                //ListPackages lp = (ListPackages) savedInstanceState.getSerializable(ListPackages.key);
+                categoryList = (lc != null) ? lc.categoryList : categoryList;
+                //packagesList = (lp != null) ? lp.packagesList : packagesList ;
             }
 
-            Bundle bundle = getIntent().getExtras();
+            /*Bundle bundle = getIntent().getExtras();
 
             if(bundle != null){
+                ListCategory lc = bundle.getSerializable(ListCategory.key) != null ? (ListCategory) bundle.getSerializable(ListCategory.key): null;
                 ListPackages lp = bundle.getSerializable(ListPackages.key) != null ? (ListPackages) bundle.getSerializable(ListPackages.key): null;
+                categoryList = lc != null ? lc.categoryList : categoryList;
                 packagesList = lp != null ? lp.packagesList : packagesList;
-            }
+            }*/
 
-            if (packagesList.size() == 0 || packagesList == null) {
+            if (categoryList.size() == 0 || categoryList == null) {
                 new MainActivity.getPackages(null).execute(Routes.packages[0]);
             } else {
                 setShowRecyclerView();
-            }*/
+            }
 
 
         }else{
@@ -224,9 +245,17 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
     }
 
     private void setShowRecyclerView(){
-        packagesAdapter = new PackagesAdapter(context, packagesList);
-        recyclerView.setAdapter(packagesAdapter);
-        recyclerView.addOnItemTouchListener(new MainActivity.RecyclerViewOnTouchListener(context, recyclerView, MainActivity.this));
+        viewPager.setAdapter(
+                new CategoryFragmentStatePagerAdapter(
+                        getSupportFragmentManager(),
+                        categoryList
+                )
+        );
+        progress.setVisibility(View.GONE);
+
+        //packagesAdapter = new PackagesAdapter(context, packagesList);
+        //recyclerView.setAdapter(packagesAdapter);
+        //recyclerView.addOnItemTouchListener(new MainActivity.RecyclerViewOnTouchListener(context, recyclerView, MainActivity.this));
     }
 
     private class CategoryFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
@@ -386,10 +415,18 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
 
             }
 
+            categoryList.add(new Category(
+                    "Todos",
+                    "todos",
+                    packagesList
+            ));
 
-            packagesAdapter = new PackagesAdapter(context, packagesList);
-            recyclerView.setAdapter(packagesAdapter);
-            recyclerView.addOnItemTouchListener(new MainActivity.RecyclerViewOnTouchListener(context, recyclerView, MainActivity.this));
+
+            new MainActivity.getCategories(null).execute(Routes.categories[0]);
+
+            //packagesAdapter = new PackagesAdapter(context, packagesList);
+            //recyclerView.setAdapter(packagesAdapter);
+            //recyclerView.addOnItemTouchListener(new MainActivity.RecyclerViewOnTouchListener(context, recyclerView, MainActivity.this));
 
             //packagesAdapter.setRecyclerViewOnClickListenerHack(HomeFragment.this);
 
@@ -549,6 +586,7 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
             try{
                 if(!result.has("error")){
                     JSONArray arrCategory = result.getJSONArray("success");
+
                     for(int i = 0; i < arrCategory.length(); i++){
                         try{
                             JSONObject objCategory = arrCategory.getJSONObject(i);
@@ -573,14 +611,14 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
                                             allPackages
                                     )
                             );
-                            //packages.add(new Package(2, "Completo", "Pacote completo", 50.00));
+
                         }catch (JSONException ex){
                             ex.printStackTrace();
                         }
                     }
                 }
             }catch (JSONException e){
-
+                e.printStackTrace();
             }
             viewPager.setAdapter(
                     new CategoryFragmentStatePagerAdapter(
@@ -588,6 +626,7 @@ public class MainActivity extends BaseActivity implements RecyclerViewOnClickLis
                             categoryList
                     )
             );
+            progress.setVisibility(View.GONE);
         }
 
 

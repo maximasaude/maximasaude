@@ -7,11 +7,17 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -25,7 +31,7 @@ import com.saude.maxima.utils.Routes;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     AutoCompleteTextView edtEmail, edtPassword;
     Button btnLogin;
@@ -55,22 +61,55 @@ public class LoginActivity extends BaseActivity {
         super.onResume();
         clearChecked();
         navigationView.getMenu().findItem(R.id.nav_login).setChecked(true);
-
     }
 
     @Override
     public void onPause(){
         super.onPause();
-        finish();
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_home) {
+            finish();
+        }else if (id == R.id.nav_login) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }else if (id == R.id.nav_cart) {
+            Intent intent = new Intent(this, DiaryActivity.class);
+            startActivity(intent);
+            finish();
+        }else if (id == R.id.nav_report) {
+            Intent intent = new Intent(this, ReportActivity.class);
+            startActivity(intent);
+            finish();
+        }else if (id == R.id.nav_perfil) {
+            Intent intent = new Intent(this, EditUserActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getLayoutInflater().inflate(R.layout.activity_login, frameLayout);
-        getSupportActionBar().setTitle(R.string.title_activity_login);
 
-        navigationView.getMenu().getItem(1).setChecked(true);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.title_activity_login);
+        setActionBarDrawerToggle(toolbar);
+
+        navigationView.getMenu().findItem(R.id.nav_login).setChecked(true);
+        navigationView.setNavigationItemSelectedListener(this);
 
         activity = this;
 
@@ -89,6 +128,15 @@ public class LoginActivity extends BaseActivity {
         btnLogin = (Button) findViewById(R.id.btnLogin);
         txtCreate = (TextView) findViewById(R.id.txtCreate);
         progressBar = (ProgressBar) findViewById(R.id.progress);
+
+        edtPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                login(textView);
+                return false;
+
+            }
+        });
     }
 
     /**
@@ -107,14 +155,14 @@ public class LoginActivity extends BaseActivity {
             String email = edtEmail.getText().toString();
             String password = edtPassword.getText().toString();
             if(email.isEmpty() || password.isEmpty()){
-                edtEmail.setText(R.string.field_required);
-                edtPassword.setText(R.string.field_required);
+                edtEmail.setError(getString(R.string.field_required));
+                edtPassword.setError(getString(R.string.field_required));
                 Toast.makeText(getApplicationContext(), "Preencha os campos", Toast.LENGTH_SHORT).show();
             }else {
                 params = "username="+email;
                 params += "&password="+password+"&grant_type=password";
                 params += "&client_id=2";
-                params += "&client_secret=TkFESksxjjJq5NQTrPI3ob3rd8NQnqIgPEtLYeAu";
+                params += "&client_secret=RkohvyMvNAjViUDlTdQjx5dvSw2dlYaUTvu5CvGq";
                 params += "&scope=";
 
                 content.setVisibility(View.GONE);
@@ -221,10 +269,8 @@ public class LoginActivity extends BaseActivity {
 
                     //Adicionando os dados do usuário
                     SharedPreferences sharedPreferences = activity.getSharedPreferences("user", Context.MODE_PRIVATE);
-                    sharedPreferences.edit().putString("user", data.toString()).commit();
+                    sharedPreferences.edit().putString("user", data.toString()).apply();
 
-                    Intent intent = new Intent(activity, MainActivity.class);
-                    startActivity(intent);
                     finish();
 
                     //Iniciando a transição para a tela home

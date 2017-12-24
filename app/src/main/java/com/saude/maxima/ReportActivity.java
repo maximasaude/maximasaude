@@ -49,6 +49,7 @@ public class ReportActivity extends BaseActivity implements RecyclerViewOnClickL
     List<Schedule> scheduleList;
     ReportScheduledAdapter reportSimpleAdapter;
     ProgressBar progressBar;
+    Toolbar toolbar;
 
     @Override
     public void onPause(){
@@ -63,8 +64,6 @@ public class ReportActivity extends BaseActivity implements RecyclerViewOnClickL
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
             finish();
         }else if (id == R.id.nav_login) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -93,9 +92,12 @@ public class ReportActivity extends BaseActivity implements RecyclerViewOnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getLayoutInflater().inflate(R.layout.activity_report, frameLayout);
-        getSupportActionBar().setTitle(R.string.report);
-        navigationView.setNavigationItemSelectedListener(this);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.report);
+        setActionBarDrawerToggle(toolbar);
+
+        navigationView.setNavigationItemSelectedListener(this);
 
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
@@ -108,43 +110,6 @@ public class ReportActivity extends BaseActivity implements RecyclerViewOnClickL
         );
 
         tabLayout.setupWithViewPager(viewPager);
-
-        //progressBar = (ProgressBar) findViewById(R.id.progress);
-
-        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        /*fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                    }
-        });*/
-
-        //recyclerView = (RecyclerView) findViewById(R.id.recycleView);
-        //recyclerView.setHasFixedSize(true);
-
-        //linearLayoutManager = new LinearLayoutManager(this);
-        //gridLayoutManager = new GridLayoutManager(getActivity(), 2, GridLayoutManager.VERTICAL, false);
-        //linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
-        //staggeredGridLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
-        //staggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.VERTICAL);
-        //recyclerView.setLayoutManager(linearLayoutManager);
-
-        //this.onScrollRecycleView();
-
-        //Auth auth = new Auth(this);
-        //int id = 0;
-        /*try {
-            id = auth.getAuth().getInt("id");
-        }catch (JSONException e){
-            e.printStackTrace();
-        }*/
-
-        //Executando busca de todos os pacotes disponíveis na API
-        //String url = Routes.schedules[1].replace("{id}", ""+id);
-        //new getSchedules(null).execute(url);
-        //progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override

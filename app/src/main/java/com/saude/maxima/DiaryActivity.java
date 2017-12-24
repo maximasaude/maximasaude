@@ -68,6 +68,7 @@ public class DiaryActivity extends BaseActivity implements NavigationView.OnNavi
     EditText cardNumber;
     WebView webView;
     ProgressBar progressBar;
+    Toolbar toolbar;
 
     View view;
 
@@ -102,8 +103,6 @@ public class DiaryActivity extends BaseActivity implements NavigationView.OnNavi
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
             finish();
         }else if (id == R.id.nav_login) {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -133,7 +132,13 @@ public class DiaryActivity extends BaseActivity implements NavigationView.OnNavi
         super.onCreate(savedInstanceState);
 
         getLayoutInflater().inflate(R.layout.activity_diary, frameLayout);
-        getSupportActionBar().setTitle(R.string.cart);
+
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.cart);
+        setActionBarDrawerToggle(toolbar);
+
+
         navigationView.setNavigationItemSelectedListener(this);
 
         progressBar = (ProgressBar) findViewById(R.id.progress);

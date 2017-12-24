@@ -35,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -93,6 +94,7 @@ public class CreateUserActivity extends AppCompatActivity implements LoaderCallb
 
     Toolbar toolbar;
     Spinner spinner;
+    ProgressBar progressBar;
 
 
     ProgressDialog progressDialog;
@@ -354,7 +356,7 @@ public class CreateUserActivity extends AppCompatActivity implements LoaderCallb
     /**
      * Implementation of AsyncTask designed to fetch data from the network.
      */
-    private class create extends AsyncTask<String, Void, JSONObject> {
+    public class create extends AsyncTask<String, Void, JSONObject> {
 
         /**
          * Defines work to perform on the background thread.
@@ -376,18 +378,85 @@ public class CreateUserActivity extends AppCompatActivity implements LoaderCallb
                     String tokenType = result.getJSONObject("success").get("token").toString();
                     new getUser("Bearer", tokenType, params).execute(Routes.takeUser);
                 } else {
-                    JSONArray name = result.getJSONObject("errors").getJSONArray("name");
-                    JSONArray email = result.getJSONObject("errors").getJSONArray("email");
-                    String message = "";
-                    for(int i = 0; i < name.length(); i++){
-                        message += name.get(i).toString()+"\n";
-                    }
-                    for(int i = 0; i < email.length(); i++){
-                        message += email.get(i).toString()+"\n";
+
+                    try {
+                        String error_name = "";
+                        JSONArray name = result.getJSONObject("errors").getJSONObject("errors").getJSONArray("name");
+                        for (int i = 1; i <= name.length(); i++) {
+                            if (i == name.length()) {
+                                error_name += name.get(i - 1).toString();
+                            } else {
+                                error_name += name.get(i - 1).toString() + "\n";
+                            }
+                        }
+
+                        TextView errorName = (TextView) findViewById(R.id.errorName);
+                        errorName.setVisibility(View.VISIBLE);
+                        errorName.setText(error_name);
+                        edtName.setError(error_name);
+                    }catch(JSONException ex){
+                        ex.printStackTrace();
+                        TextView errorName = (TextView) findViewById(R.id.errorName);
+                        errorName.setVisibility(View.GONE);
+                        errorName.setText("");
+                        edtName.setError(null);
                     }
 
-                    Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
-                    mProgressView.setVisibility(View.GONE);
+                    try {
+                        String error_email = "";
+                        JSONArray email = result.getJSONObject("errors").getJSONObject("errors").getJSONArray("email");
+                        for(int i = 1; i <= email.length(); i++){
+                            if(i == email.length()) {
+                                error_email += email.get(i-1).toString();
+                            }else{
+                                error_email += email.get(i-1).toString() + "\n";
+                            }
+                        }
+                        TextView errorEmail = (TextView) findViewById(R.id.errorEmail);
+                        errorEmail.setVisibility(View.VISIBLE);
+                        errorEmail.setText(error_email);
+                        mEmailView.setError(error_email);
+                    }catch(JSONException ex){
+                        ex.printStackTrace();
+                        TextView errorEmail = (TextView) findViewById(R.id.errorEmail);
+                        errorEmail.setVisibility(View.GONE);
+                        errorEmail.setText("");
+                        mEmailView.setError(null);
+                    }
+
+                    try {
+                        String error_password = "";
+                        if(result.getJSONObject("errors").getJSONObject("errors").getJSONArray("password") != null){
+                            JSONArray password = result.getJSONObject("errors").getJSONObject("errors").getJSONArray("password");
+                            for(int i = 1; i <= password.length(); i++){
+                                if(i == password.length()) {
+                                    error_password += password.get(i-1).toString();
+                                }else{
+                                    error_password += password.get(i-1).toString() + "\n";
+                                }
+                            }
+                        }
+                        edtPassword.setError(error_password);
+                    }catch(JSONException ex){
+                        ex.printStackTrace();
+                    }
+
+                    try {
+                        String error_confirm_password = "";
+                        if(result.getJSONObject("errors").getJSONObject("errors").getJSONArray("confirm_password") != null){
+                            JSONArray confirm_password = result.getJSONObject("errors").getJSONObject("errors").getJSONArray("confirm_password");
+                            for(int i = 1; i <= confirm_password.length(); i++){
+                                if(i == confirm_password.length()) {
+                                    error_confirm_password += confirm_password.get(i-1).toString();
+                                }else{
+                                    error_confirm_password += confirm_password.get(i-1).toString() + "\n";
+                                }
+                            }
+                        }
+                        edtConfirmPassword.setError(error_confirm_password);
+                    }catch(JSONException ex){
+                        ex.printStackTrace();
+                    }
                 }
             }catch (JSONException e){
                 e.printStackTrace();
